@@ -1,5 +1,6 @@
 {
     "name": "spindogs/wp-platform",
+    "version": "1.7.19",
     "type": "library",
     "description": "Platform to allow developers to build bespoke functionality in an MVC and OOP fashion",
     "require": {
