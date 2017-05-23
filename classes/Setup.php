@@ -44,9 +44,6 @@ class Setup {
             self::$salt = SALT;
         }
 
-        //autoloader
-        spl_autoload_register(array('Platform\Setup', 'autoload'));
-
         //setup request
         Request::setup();
     }
@@ -67,7 +64,10 @@ class Setup {
         self::$lang = get_current_blog_id();
 
         //autoloader
-        self::setup();
+        spl_autoload_register(['Platform\Setup', 'autoload']);
+
+        //setup request
+        Request::setup();
 
         //deprecated
         add_action('after_setup_theme', [__CLASS__, 'deprecated']);
