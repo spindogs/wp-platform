@@ -1,0 +1,14 @@
+{
+    "name": "spindogs/WP-Platform",
+    "type": "library",
+    "description": "Platform to allow developers to build bespoke functionality in an MVC and OOP fashion",
+    "require": {
+        "php": ">=5.6.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Platform\\Beta\\": "beta/",
+            "Platform\\": "classes/"
+        }
+    }
+}
