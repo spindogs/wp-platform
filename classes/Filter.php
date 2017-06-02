@@ -611,7 +611,7 @@ class Filter {
     }
 
     /**
-     * @param string $start
+     * @param string $str
      * @return string
      */
     public static function titleCase($str)
@@ -619,6 +619,17 @@ class Filter {
         $str = strtolower($str);
         $str = ucwords($str);
         $str = str_replace('_', ' ', $str);
+        return $str;
+    }
+
+    /**
+     * @param string $str
+     * @return string
+     */
+    public static function snakeCase($str)
+    {
+        $str = preg_replace('/(?<!^)[A-Z]/', '_$0', $str);
+        $str = strtolower($str);
         return $str;
     }
 
