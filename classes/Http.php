@@ -13,8 +13,9 @@ class Http {
     public $content_type;
     public $connect_timeout;
     public $body;
-    public $auto_decode_json = true; //legacy
+    public $auto_decode_json = true;
     protected $http_code;
+    protected $redirect_url;
     protected $debug;
 
     /**
@@ -75,6 +76,7 @@ class Http {
 
         $rtn = curl_exec($ch);
         $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $this->redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
 
         //debug
         $this->debug = curl_getinfo($ch);
@@ -105,11 +107,19 @@ class Http {
     }
 
     /**
-     *
+     * @return int
      */
     public function getHttpCode()
     {
         return $this->http_code;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRedirectUrl()
+    {
+        return $this->redirect_url;
     }
 
 }
