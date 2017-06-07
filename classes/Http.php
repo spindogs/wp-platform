@@ -10,6 +10,7 @@ class Http {
     public $headers = array();
     public $params = array();
     public $authorization;
+    public $userpwd;
     public $content_type;
     public $connect_timeout;
     public $body;
@@ -44,6 +45,10 @@ class Http {
             $params = $this->params;
             $param_string = http_build_query($params);
             $url .= '?'.$param_string;
+        }
+
+        if ($this->userpwd) {
+            curl_setopt($ch, CURLOPT_USERPWD, $this->userpwd);
         }
 
         if ($this->connect_timeout) {
