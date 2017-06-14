@@ -457,6 +457,7 @@ class Form {
         $attrs = $this->filterAttrs($attrs, $name);
         $input = '';
 
+        $i = 0;
         foreach ($options as $key => $text) {
 
             if ($key == $value && $value !== false && $value !== '' && $value !== null) {
@@ -469,13 +470,18 @@ class Form {
             $input .= '<input ';
             $input .= 'type="radio" ';
             $input .= 'name="'.$name.'" ';
-            $input .= 'id="{input_id}" ';
+
+            if ($i == 0) {
+                $input .= 'id="{input_id}" '; //first option only
+            }
+
             $input .= 'value="'.self::escHtml($key).'" ';
             $input .= $checked;
             $input .= '> ';
             $input .= $text;
             $input .= '</label> ';
 
+            $i++;
         }
 
         $this->inputs[$name] = $input;
@@ -1440,7 +1446,6 @@ class Form {
      */
     public function display()
     {
-
         echo '<div id="'.$this->form_id.'">';
         echo "\n";
 
@@ -1449,7 +1454,6 @@ class Form {
 
         echo '</div>';
         echo "\n";
-
     }
 
     /**
@@ -1466,7 +1470,6 @@ class Form {
         //start form
         echo '<form action="'.$action.'" ';
         echo 'method="'.$this->method.'" ';
-        echo 'id="'.$this->form_id.'" ';
         echo 'class="'.$this->form_class.'" ';
         echo 'enctype="multipart/form-data">';
         echo "\n";
