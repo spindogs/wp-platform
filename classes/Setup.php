@@ -1,6 +1,8 @@
 <?php
 namespace Platform;
 
+use Platform\Filter;
+
 class Setup {
 
     protected static $caught_errors = false;
@@ -9,6 +11,7 @@ class Setup {
     public static $app_path;
     public static $template_path;
     public static $cache_path;
+    protected static $upload_path;
     public static $salt;
     protected static $lang;
     protected static $default_lang;
@@ -16,6 +19,27 @@ class Setup {
     protected static $from_email;
     protected static $from_name;
     protected static $use_deprecated = true;
+
+    public static function __callStatic($name, $args)
+    {
+        if ($args) {
+            $value = reset($args);
+        } else {
+            $value = null;
+        }
+
+        $property = Filter::snakeCase($name);
+
+        if (!property_exists(__CLASS__, $property)) {
+            return;
+        }
+
+        if ($value !== null) {
+            self::${$property} = $value;
+        } else {
+            return self::${$property};
+        }
+    }
 
     /**
      * @return void
@@ -53,18 +77,19 @@ class Setup {
      */
     public static function setupWordpress()
     {
+        //autoloader
+        spl_autoload_register(['Platform\Setup', 'autoload']);
+
         //paths
         self::$root_path = rtrim(ABSPATH, '/');
         self::$platform_path = WP_PLUGIN_DIR.'/wp-platform';
         self::$app_path = get_template_directory().'/app';
         self::$template_path = get_template_directory();
         self::$cache_path = WP_CONTENT_DIR.'/cache';
+        self::uploadPath(WP_CONTENT_DIR.'/uploads');
 
         //vars
         self::$lang = get_current_blog_id();
-
-        //autoloader
-        spl_autoload_register(['Platform\Setup', 'autoload']);
 
         //setup request
         Request::setup();
