@@ -1,6 +1,10 @@
 <?php
 namespace Platform;
 
+use Platform\Setup;
+use Platform\Filter;
+use Platform\Html;
+
 class Form {
 
     protected $uniquevar;
@@ -1317,6 +1321,180 @@ class Form {
 
         }
 
+    }
+
+    /**
+     * @param string $name
+     * @param string $label
+     * @param string $initial
+     * @param bool $required
+     * @param array $attrs
+     * @return void
+    */
+    public function file($name, $label = '', $initial = '', $required = null, $attrs = [])
+    {
+        if (empty($attrs['extensions'])) {
+            $attrs['extensions'] = array();
+        }
+
+        $params = get_defined_vars();
+        $params['type'] = __FUNCTION__;
+        $this->addField($name, $params);
+
+        //path to directory
+        if (isset($attrs['path_to']) && $attrs['path_to'] === true) {
+            $path_to = Setup::uploadPath();
+        } elseif (isset($attrs['path_to'])) {
+            $path_to = rtrim($attrs['path_to'], '/');
+        } else {
+            $path_to = false;
+        }
+
+        //get source
+        $source = null;
+
+        if (!empty($_FILES[$name]['size'])) {
+
+            //get uploaded file
+            $source = $_FILES[$name]['tmp_name'];
+            $filename = $_FILES[$name]['name'];
+            $ext = Filter::extension($filename);
+
+            //check image extension valid
+            if (!empty($attrs['extensions'])) {
+
+                $allowed_exts = (array)$attrs['extensions'];
+                $allowed_exts_formatted = implode(', ', $allowed_exts);
+
+                if (in_array($ext, $allowed_exts)) {
+                    //do nothing if extension is valid
+                } else {
+                    $source = false;
+                    $this->error(sprintf('Your file must be in one of the following formats: %s', $allowed_exts_formatted), $name);
+                }
+
+            }
+
+        }
+
+        //default value
+        if ($source) {
+            $value = $source;
+        } elseif (isset($_REQUEST[$name])) {
+            $value = $_REQUEST[$name];
+        } elseif ($initial) {
+            $value = $initial;
+        } else {
+            $value = null;
+        }
+
+        //move to target path
+        if ($source && $path_to) {
+
+            //generate filename
+            if (empty($attrs['keep_filename'])) {
+                $filelabel = str_replace('.'.$ext, '', $filename);
+                $filelabel = Filter::clean($filelabel);
+                $filelabel = substr($filelabel, 0, 50);
+                $uid = microtime();
+                $uid = md5($uid);
+                $uid = substr($uid, 0, 8);
+                $filename = $filelabel.'-'.$uid.'.'.$ext;
+            }
+
+            //upload file to directory
+            $destination = $path_to.'/'.$filename;
+            copy($source, $destination);
+            $value = $filename;
+
+        }
+
+        //cleanup files
+        if ($this->success()) {
+            if ($initial) {
+                if ($value != $initial) { //new file uploaded - delete old file
+                    @unlink($path_to.'/'.$initial);
+                } elseif (!empty($_REQUEST[$name.'_DELETE'])) { //delete old file
+                    @unlink($path_to.'/'.$initial);
+                    $value = false;
+                }
+            }
+        }
+
+        //set value
+        $this->setValue($name, $value);
+
+        //check required
+        if ($this->submitted()) {
+            if ($this->isRequired($name) && !$value && !$initial) {
+                $msg = 'You must select a file to upload';
+                $this->error($msg, $name);
+            }
+        }
+
+        //make input html
+        $attrs = $this->filterAttrs($attrs, $name);
+        $abspath = Setup::rootPath();
+        $base_uri = str_replace($abspath, '', $path_to);
+        $filepath = $path_to.'/'.$value;
+
+        if ($this->isRequired($name)) {
+            $show_delete = false;
+        } elseif (isset($attrs['show_delete'])) {
+            $show_delete = $attrs['show_delete'];
+        } else {
+            $show_delete = true;
+        }
+
+        if ($value && $path_to) {
+
+            $input .= '<div class="preview_wrap">';
+
+            if (is_readable($filepath)) {
+                $input .= '<a href="'.$base_uri.'/'.$value.'" target="_blank">';
+                $input .= $value;
+                $input .= '</a>';
+            } else {
+                $input .= $value;
+            }
+
+            $input .= '&nbsp;&nbsp;';
+
+            if ($show_delete) {
+                $input .= '<label>';
+                $input .= '<input type="checkbox" name="'.$name.'_DELETE'.'" value="1"> ';
+                $input .= 'Delete';
+                $input .= '</label> ';
+            }
+
+            $input .= '</div>';
+
+        }
+
+        $input .= '<input ';
+        $input .= 'type="file" ';
+        $input .= 'name="'.$name.'" ';
+        $input .= 'id="{input_id}" ';
+        $input .= 'value="'.self::escHtml($value).'" ';
+        $input .= 'class="{error}" ';
+        $input .= self::makeAttr('placeholder', $attrs);
+        $input .= self::makeAttr('readonly', $attrs);
+        $input .= self::makeAttr('disabled', $attrs);
+        $input .= self::makeAttr('autocomplete', $attrs);
+        $input .= self::makeAttr('step', $attrs);
+        $input .= self::makeAttr('min', $attrs);
+        $input .= self::makeAttr('max', $attrs);
+        $input .= '>';
+
+        if ($value && $path_to) {
+            $input .= '<input ';
+            $input .= 'type="hidden" ';
+            $input .= 'name="'.$name.'" ';
+            $input .= 'value="'.$value.'" ';
+            $input .= '>';
+        }
+
+        $this->inputs[$name] = $input;
     }
 
     /**

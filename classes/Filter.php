@@ -1,7 +1,7 @@
 <?php
 namespace Platform;
 
-use \DateTime;
+use DateTime;
 
 class Filter {
 
@@ -86,7 +86,6 @@ class Filter {
      */
     public static function clean($str)
     {
-
         $trans = array(
             ' ' => '-',
             '.' => '-',
@@ -110,7 +109,6 @@ class Filter {
         }
 
         return $str;
-
     }
 
     /**
