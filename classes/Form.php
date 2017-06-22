@@ -1437,6 +1437,7 @@ class Form {
         $abspath = Setup::rootPath();
         $base_uri = str_replace($abspath, '', $path_to);
         $filepath = $path_to.'/'.$value;
+        $input = '';
 
         if ($this->isRequired($name)) {
             $show_delete = false;
