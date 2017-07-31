@@ -853,7 +853,7 @@ class Form {
                 <?= $max; ?>
             });
             </script>
-            <?
+            <?php
         $html = ob_get_contents();
         ob_end_clean();
 

@@ -68,7 +68,7 @@ require('admin-header.php');
                         <button type="submit">Save</button>
                     </td>
                 </tr>
-            <? } ?>
+            <?php } ?>
 
         </table>
     </form>
