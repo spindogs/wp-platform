@@ -147,7 +147,8 @@ class Translation extends Model {
             $translation->date_accessed = new DateTime();
             $translation->langs = [$default_lang => $uid];
             $translation->create(); //auto create the english translation in debug mode
-            self::$cache[$lang][$uid] = $uid; //add to cache
+            $translation->value = $uid; //this is used below
+            self::$cache[$lang][$uid] = $translation; //add to cache
             return $uid;
         } else {
             return $uid;
