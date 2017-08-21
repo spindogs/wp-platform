@@ -1,6 +1,8 @@
 <?php
 namespace Platform;
 
+use oDatabase;
+
 class Security {
 
     /**
@@ -18,7 +20,7 @@ class Security {
      */
     public static function escSql($str)
     {
-        if (!class_exists('oDatabase')) {
+        if (function_exists('esc_sql')) {
             return '\''.esc_sql($str).'\'';
         }
 
