@@ -154,11 +154,6 @@ class Translation extends Model {
             return $uid;
         }
 
-        // if (!$translation->value) {
-        //     self::build($default_lang); //if blank then use the default translation
-        //     $translation = self::$cache[$default_lang][$uid];
-        // }
-
         if (self::$debug) {
             $modify = new self($translation->id);
             $modify->date_accessed = new DateTime();

@@ -1,4 +1,5 @@
 <?php
+use Platform\Setup;
 use Platform\Translation;
 use Platform\Security;
 use Platform\Request;
@@ -13,21 +14,14 @@ if (isset($_POST['translations'])) {
     }
 }
 
+//get lang
+$lang = Setup::getLang();
+$lang_name = get_bloginfo('name');
+
 //get translations
 $collection = new Collection(Translation::class);
+$collection->where('lang', $lang);
 $translations = $collection->getAll();
-$translations_by_uid = [];
-
-foreach ($translations as $translation) {
-    $translations_by_uid[$translation->uid][$translation->lang] = $translation;
-}
-
-$num_langs = 1;
-
-foreach ($translations_by_uid as $key_langs) {
-    $num_per_key = count($key_langs);
-    $num_langs = max($num_langs, $num_per_key);
-}
 
 //header
 require('admin-header.php');
@@ -42,33 +36,29 @@ require('admin-header.php');
 
             <thead>
                 <tr>
-                    <th>Key</th>
-                    <?php for ($i = 0; $i <= $num_langs; $i++) { ?>
-                        <th></th>
-                    <?php } ?>
+                    <th>
+                        Key
+                    </th>
+                    <th style="width:50%">
+                        Translation (<?= Security::escHTML($lang_name); ?>)
+                    </th>
                     <th></th>
                 </tr>
             </thead>
 
-            <?php foreach ($translations_by_uid as $uid => $trans_langs) { ?>
+            <?php foreach ($translations as $translation) { ?>
                 <tr>
-                    <td><?= $uid; ?></td>
-                    <?php $i = 0; ?>
-                    <?php foreach ($trans_langs as $translation) { ?>
-                        <td>
-                            <input type="text" name="translations[<?= intval($translation->id); ?>][langs][<?= Security::escHTML($translation->lang); ?>]" value="<?= Security::escHTML($translation->value); ?>">
-                        </td>
-                        <?php $i++; ?>
-                    <?php } ?>
-                    <?php while ($i <= $num_langs) { ?>
-                        <td></td>
-                        <?php $i++; ?>
-                    <?php } ?>
+                    <td>
+                        <?= Security::escHTML($translation->uid); ?>
+                    </td>
+                    <td>
+                        <input type="text" name="translations[<?= intval($translation->id); ?>][langs][<?= Security::escHTML($lang); ?>]" value="<?= Security::escHTML($translation->value); ?>" style="width:100%">
+                    </td>
                     <td>
                         <button type="submit">Save</button>
                     </td>
                 </tr>
-            <?php } ?>
+            <? } ?>
 
         </table>
     </form>
