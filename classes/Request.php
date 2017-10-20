@@ -63,93 +63,9 @@ class Request {
     }
 
     /**
-     * @param string $key
-     * @param mixed $val
-     * @param string $base_uri
-     */
-    public static function addVar($key, $val, $base_uri = null)
-    {
-        if (is_array($key)) {
-            $vars = $key;
-            $base_uri = $val;
-        } else {
-            $vars = array($key => $val);
-        }
-
-        if ($base_uri) {
-            $base_uri = str_replace('&amp;', '&', $base_uri);
-            $url_split = parse_url($base_uri);
-            $base_uri = $url_split['path'];
-            $query_str = @$url_split['query'];
-        } else {
-            $base_uri = self::getPath();
-            $query_str = self::getQuery(false);
-        }
-
-        $query_vars = array();
-        parse_str($query_str, $query_vars);
-
-        foreach ($vars as $key => $val) {
-
-            if ($val !== null) {
-                $query_vars[$key] = $val;
-            }
-
-        }
-
-        if ($query_vars) {
-            return $base_uri.'?'.http_build_query($query_vars, '', '&');
-        } else {
-            return $base_uri;
-        }
-
-    }
-
-    /**
-     * @param string $key
-     * @param string $base_uri
      * @return string
      */
-    public static function removeVar($key, $base_uri = null)
-    {
-        if (is_array($key)) {
-            $vars = $key;
-        } else {
-            $vars = array($key);
-        }
-
-        if ($base_uri) {
-            $base_uri = str_replace('&amp;', '&', $base_uri);
-            $url_split = parse_url($base_uri);
-            $base_uri = $url_split['path'];
-            $query_str = @$url_split['query'];
-        } else {
-            $base_uri = self::getPath();
-            $query_str = self::getQuery(false);
-        }
-
-        $query_vars = array();
-        parse_str($query_str, $query_vars);
-
-        foreach ($vars as $key) {
-
-            if (isset($query_vars[$key])) {
-                unset($query_vars[$key]);
-            }
-
-        }
-
-        if ($query_vars) {
-            return $base_uri.'?'.http_build_query($query_vars, '', '&');
-        } else {
-            return $base_uri;
-        }
-    }
-
-    /**
-     * @return string
-     */
-    public static function getMethod()
+    public static function method()
     {
         self::setup();
         return self::$method;
@@ -158,7 +74,7 @@ class Request {
     /**
      * @return string
      */
-    public static function getScheme()
+    public static function scheme()
     {
         self::setup();
         return self::$scheme;
@@ -167,7 +83,7 @@ class Request {
     /**
      * @return string
      */
-    public static function getHost()
+    public static function host()
     {
         self::setup();
         return self::$host;
@@ -176,7 +92,7 @@ class Request {
     /**
      * @return string
      */
-    public static function getPath()
+    public static function path()
     {
         self::setup();
         return self::$path;
@@ -186,7 +102,7 @@ class Request {
      * @param boolean $with_prefix
      * @return string
      */
-    public static function getQuery($with_prefix = true)
+    public static function query($with_prefix = true)
     {
         self::setup();
 
@@ -202,7 +118,7 @@ class Request {
     /**
      * @return string
      */
-    public static function getFragment()
+    public static function fragment()
     {
         self::setup();
         return self::$fragment;
@@ -211,47 +127,36 @@ class Request {
     /**
      * @return string
      */
-    public static function getHttpUrl()
+    public static function httpHost()
     {
         self::setup();
-        return self::getScheme().self::getHost();
-    }
-
-    /**
-     * @deprecated
-     * @return string
-     */
-    public static function getUri()
-    {
-        self::setup();
-        return self::getRequest();
+        return self::scheme().self::host();
     }
 
     /**
     * @return string
     */
-    public static function getRequest()
+    public static function get()
     {
         self::setup();
-        return self::getPath().self::getQuery();
+        return self::path().self::query();
     }
 
     /**
      * @return string
      */
-    public static function getUrl()
+    public static function url()
     {
         self::setup();
-        return self::getScheme().self::getHost().self::getPath().self::getQuery();
+        return self::scheme().self::host().self::path().self::query();
     }
 
     /**
      * @param string $key
      * @return mixed
      */
-    public static function getParam($key)
+    public static function param($key)
     {
-        self::setup();
         $rtn = Filter::nullify($_GET[$key]);
         return $rtn;
     }

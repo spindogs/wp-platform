@@ -86,6 +86,7 @@ class Setup {
 
         //vars
         self::$lang = get_current_blog_id();
+        self::$salt = NONCE_SALT;
 
         //setup request
         Request::setup();
@@ -139,15 +140,14 @@ class Setup {
      */
     public static function router()
     {
-        $filepath = Setup::appPath('routes.php');
+        $router = 'App\\Routes';
 
-        if (file_exists($filepath)) {
-            require($filepath);
+        if (class_exists($router)) {
+            $router::register();
+            $router::dispatch();
         } else {
             return;
         }
-
-        $view = Route::dispatch(); //deprecated route mechanism
     }
 
     /**
@@ -247,30 +247,12 @@ class Setup {
 
         $emails = self::$debug_emails;
         $sitename = get_bloginfo('name');
-        $subject = '['.$sitename.' Bug] '.Request::getUrl();
+        $subject = '['.$sitename.' Bug] '.Request::url();
 
         foreach ($emails as $to) {
             mail($to, $subject, $msg, 'From: bugs@spindogs.com');
         }
 
-    }
-
-    /**
-     * @param mixed $lang
-     * @return void
-     */
-    public static function defaultLang($lang)
-    {
-        self::$default_lang = $lang;
-    }
-
-    /**
-     * @param mixed $salt
-     * @return void
-     */
-    public static function salt($salt)
-    {
-        self::$salt = $salt;
     }
 
     /**
@@ -452,22 +434,6 @@ class Setup {
         }
 
         return $rtn;
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getLang()
-    {
-        return self::$lang;
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getDefaultLang()
-    {
-        return self::$default_lang;
     }
 
 }

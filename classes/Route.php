@@ -69,7 +69,7 @@ class Route {
     public static function dispatch()
     {
         //get request path
-        $path_to_page = Request::getPath();
+        $path_to_page = Request::path();
 
         //determine if page is admin
         if ($path_to_page == '/wp-admin/admin.php') {

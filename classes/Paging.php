@@ -1,6 +1,8 @@
 <?php
 namespace Platform;
 
+use Platform\Url;
+
 class Paging {
 
     public $page;
@@ -118,13 +120,13 @@ class Paging {
 
         if ($prev_page > 1) {
             $rtn .= '<li>';
-            $rtn .= '<a href="'.Request::addVar($this->var_name, $prev_page).$anchor.'">';
+            $rtn .= '<a href="'.Url::addVar($this->var_name, $prev_page).$anchor.'">';
             $rtn .= $prev_text;
             $rtn .= '</a>';
             $rtn .= '</li>';
         } else if ($prev_page == 1) {
             $rtn .= '<li>';
-            $rtn .= '<a href="'.Request::removeVar($this->var_name).$anchor.'">';
+            $rtn .= '<a href="'.Url::removeVar($this->var_name).$anchor.'">';
             $rtn .= $prev_text;
             $rtn .= '</a>';
             $rtn .= '</li>';
@@ -197,13 +199,13 @@ class Paging {
                     $rtn .= '</li>';
                 } elseif ($i == 1) {
                     $rtn .= '<li>';
-                    $rtn .= '<a href="'.Request::removeVar($this->var_name).$anchor.'">';
+                    $rtn .= '<a href="'.Url::removeVar($this->var_name).$anchor.'">';
                     $rtn .= $i;
                     $rtn .= '</a>';
                     $rtn .= '</li>';
                 } else {
                     $rtn .= '<li>';
-                    $rtn .= '<a href="'.Request::addVar($this->var_name, $i).$anchor.'">';
+                    $rtn .= '<a href="'.Url::addVar($this->var_name, $i).$anchor.'">';
                     $rtn .= $i;
                     $rtn .= '</a>';
                     $rtn .= '</li>';
@@ -223,7 +225,7 @@ class Paging {
 
         if ($next_page <= $last_page) {
             $rtn .= '<li>';
-            $rtn .= '<a href="'.Request::addVar($this->var_name, $next_page).$anchor.'">';
+            $rtn .= '<a href="'.Url::addVar($this->var_name, $next_page).$anchor.'">';
             $rtn .= $next_text;
             $rtn .= '</a>';
             $rtn .= '</li>';

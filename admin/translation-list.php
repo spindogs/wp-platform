@@ -31,7 +31,7 @@ require('admin-header.php');
 
     <h2>Translations</h2>
 
-    <form action="<?= Request::getUri(); ?>" method="post">
+    <form action="<?= Request::get(); ?>" method="post">
         <table class="wp-list-table widefat">
 
             <thead>
