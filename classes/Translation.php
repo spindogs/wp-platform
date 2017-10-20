@@ -1,11 +1,11 @@
 <?php
 namespace Platform;
 
-use \DateTime;
+use DateTime;
 use Platform\Setup;
 use Platform\Mysql;
-use Platform\Beta\Model;
-use Platform\Beta\Collection;
+use Platform\Model;
+use Platform\Collection;
 
 class Translation extends Model {
 

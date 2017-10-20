@@ -6,100 +6,6 @@ class PostType {
     //protected static $custom_type; //abstract
     protected static $models = array();
 
-    public $id;
-    public $name;
-    public $url;
-    public $post_type;
-    public $parent_id;
-    public $date_published;
-    public $image;
-    public $excerpt;
-    public $content;
-
-    /**
-     * @param int $id
-     * @return void
-     */
-    public function __construct($id=false)
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @return void
-     */
-    public function load()
-    {
-        $this->name = get_the_title($this->id);
-        $this->url = get_permalink($this->id);
-        $this->post_type = get_post_type($this->id);
-        $this->parent_id = get_post_field('post_parent', $this->id);
-        $this->image = array();
-        $this->content = get_post_field('post_content', $this->id);
-        $this->content = apply_filters('the_content', $this->content);
-        $this->date_published = get_the_date('Y-m-d H:i:s', $this->id);
-        $this->date_published = Filter::from_mysqltime($this->date_published);
-
-        if (has_post_thumbnail($this->id)) {
-            $attachment_id = get_post_thumbnail_id($this->id);
-        } else {
-            $attachment_id = false;
-        }
-
-        if ($attachment_id) {
-
-            $sizes = get_intermediate_image_sizes();
-            $this->image['url'] = wp_get_attachment_url($attachment_id);
-
-            foreach ($sizes as $size) {
-                $this->image['sizes'][$size] = wp_get_attachment_image_src($attachment_id, $size);
-                $this->image['sizes'][$size] = reset($this->image['sizes'][$size]);
-            }
-
-        }
-
-        if (function_exists('get_fields')) {
-            $custom_fields = get_fields($this->id);
-            $this->map($custom_fields);
-        }
-
-        $this->loader();
-
-    }
-
-    /**
-     * @return void
-     */
-    public function loader()
-    {
-        //this is a placeholder
-    }
-
-    /**
-     * @param array $row
-     * @return void
-     */
-    public function map($row)
-    {
-        if (!$row) {
-            return;
-        }
-
-        $row = (array)$row;
-        $fields = get_object_vars($this);
-
-        foreach ($row as $key => $val) {
-
-            if (!array_key_exists($key, $fields)) {
-                continue;
-            }
-
-            $this->{$key} = $val;
-
-        }
-
-    }
-
     /**
      * @return void
      */
@@ -115,7 +21,6 @@ class PostType {
         self::$models[$custom_type]['class'] = $static;
 
         add_action('wp', array($static, 'listPage'));
-
     }
 
     /**
@@ -189,97 +94,6 @@ class PostType {
         $wp_query->reset_postdata();
 
         $GLOBALS['wp_the_query'] = $wp_query;
-
-    }
-
-    /**
-     * @param int $id
-     * @return Platform\PostType
-     */
-    public static function getPost($id=false)
-    {
-        if (!$id) {
-            $id = get_the_ID();
-        }
-
-        if (!$id) {
-            return false;
-        }
-
-        $models = self::$models;
-        $post_type = get_post_type($id);
-
-        if (!$post_type) {
-            return false;
-        }
-
-        if (isset($models[$post_type]['class'])) {
-            $class = $models[$post_type]['class'];
-        } else {
-            $class = get_called_class();
-        }
-
-        $post = new $class($id);
-        $post->load();
-
-        return $post;
-
-    }
-
-    /**
-     * @return array
-     */
-    public static function getAll()
-    {
-        $args = array(
-            'post_type' => static::$custom_type,
-            'posts_per_page' => -1
-        );
-
-        $rtn = get_posts($args);
-        $rtn = Collection::convert($rtn);
-        return $rtn;
-    }
-
-    /**
-     * @param int $limit
-     * @return array
-     */
-    public static function getLatest($limit)
-    {
-        $args = array(
-            'post_type' => static::$custom_type,
-            'orderby' => 'date',
-            'order' => 'DESC',
-            'posts_per_page' => $limit
-        );
-
-        $rtn = get_posts($args);
-        $rtn = Collection::convert($rtn);
-        return $rtn;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getFeatured()
-    {
-        $meta_query = array();
-        $meta_query[] = array(
-            'key' => 'is_featured',
-            'compare' => '=',
-            'value' => true
-        );
-
-        $args = array(
-            'post_type' => static::$custom_type,
-            'posts_per_page' => -1,
-            'meta_query' => $meta_query
-        );
-
-        $rtn = get_posts($args);
-        $rtn = Collection::convert($rtn);
-        return $rtn;
     }
 
 }

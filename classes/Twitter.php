@@ -3,7 +3,7 @@ namespace Platform;
 
 use \TwitterOAuth;
 
-require_once(Setup::$platform_path.'/vendor/twitteroauth/twitteroauth.php');
+require_once(Setup::platformPath('vendor/twitteroauth/twitteroauth.php'));
 
 class Twitter {
 

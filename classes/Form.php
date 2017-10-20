@@ -100,7 +100,7 @@ class Form {
      */
     public function setValue($field, $value)
     {
-        //TODO $value = Filter::purify($value);
+        //TODO $value = Html::purify($value);
 
         if (is_scalar($value)) {
             $value = stripslashes($value);

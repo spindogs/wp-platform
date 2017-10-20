@@ -6,19 +6,18 @@ use Platform\Filter;
 class Setup {
 
     protected static $caught_errors = false;
-    public static $platform_path;
-    public static $root_path;
-    public static $app_path;
-    public static $template_path;
-    public static $cache_path;
+    protected static $platform_path;
+    protected static $root_path;
+    protected static $app_path;
+    protected static $template_path;
+    protected static $cache_path;
     protected static $upload_path;
-    public static $salt;
+    protected static $salt;
     protected static $lang;
     protected static $default_lang;
     protected static $debug_emails = [];
     protected static $from_email;
     protected static $from_name;
-    protected static $use_deprecated = true;
 
     public static function __callStatic($name, $args)
     {
@@ -77,9 +76,6 @@ class Setup {
      */
     public static function setupWordpress()
     {
-        //autoloader
-        spl_autoload_register(['Platform\Setup', 'autoload']);
-
         //paths
         self::$root_path = rtrim(ABSPATH, '/');
         self::$platform_path = WP_PLUGIN_DIR.'/wp-platform';
@@ -93,18 +89,6 @@ class Setup {
 
         //setup request
         Request::setup();
-
-        //deprecated
-        add_action('after_setup_theme', [__CLASS__, 'deprecated']);
-
-        //debug_emails
-        if (defined('DEBUG_EMAIL')) {
-            $emails = explode(',', DEBUG_EMAIL);
-            $emails = (array)$emails;
-            foreach ($emails as $to) {
-                self::debug($to);
-            }
-        }
 
         //theme support
         add_theme_support('post-thumbnails');
@@ -122,8 +106,23 @@ class Setup {
         set_exception_handler([__CLASS__, 'exceptionHandler']);
 
         //filters
-        add_filter('wp_mail_from', [__CLASS__, 'filterMailFrom']);
-        add_filter('wp_mail_from_name', [__CLASS__, 'filterMailName']);
+        add_filter('wp_mail_from', function ($email)
+        {
+            if (self::$from_email) {
+                return self::$from_email;
+            } else {
+                return $email;
+            }
+        });
+
+        add_filter('wp_mail_from_name', function ($name)
+        {
+            if (self::$from_name) {
+                return self::$from_name;
+            } else {
+                return $name;
+            }
+        });
 
         //admin setup
         Admin::setup();
@@ -136,59 +135,11 @@ class Setup {
     }
 
     /**
-     * @param string $qualified
-     * @return void
-     */
-    public static function autoload($qualified)
-    {
-        $namespaces = array(
-            'Platform\\Beta' => self::$platform_path.'/beta/',
-            'Platform' => self::$platform_path.'/classes/',
-            'App\\Controller' => self::$app_path.'/controllers/',
-            'App\\Model' => self::$app_path.'/models/',
-            'App\\Service' => self::$app_path.'/services/',
-            'App\\Widget' => self::$app_path.'/widgets/'
-        );
-
-        foreach ($namespaces as $prefix => $base_dir) {
-
-            $prefix_length = strlen($prefix);
-            $haystack_to_match = substr($qualified, 0, $prefix_length);
-
-            if ($haystack_to_match != $prefix) {
-                continue; //skip if not using this namespace prefix
-            }
-
-            $sub_namespace = substr($qualified, $prefix_length);
-            $sub_namespace = ltrim($sub_namespace, '\\');
-            $parts = explode('\\', $sub_namespace);
-            $class = array_pop($parts);
-
-            if ($parts) {
-                $sub_path = implode('/', $parts);
-                $sub_path .= '/';
-            } else {
-                $sub_path = '';
-            }
-
-            $file = $base_dir.$sub_path.$class.'.php';
-
-            if (file_exists($file)) {
-                require_once($file);
-            }
-
-            return;
-
-        }
-
-    }
-
-    /**
      * @return void
      */
     public static function router()
     {
-        $filepath = Setup::$app_path.'/routes.php';
+        $filepath = Setup::appPath('routes.php');
 
         if (file_exists($filepath)) {
             require($filepath);
@@ -207,24 +158,6 @@ class Setup {
         if (!session_id()) {
             session_start();
         }
-    }
-
-    /**
-     * @return void
-     */
-    public static function deprecated()
-    {
-        if (!self::$use_deprecated) {
-            return;
-        }
-
-        define('TEMPLATE_URI', get_template_directory_uri());
-        define('TEMPLATE_PATH', get_template_directory());
-        define('HTTP', Request::getScheme());
-        define('HOST', Request::getHost());
-        define('URI', Request::getPath());
-        define('QSTRING', Request::getQuery());
-        define('HTTP_URL', Request::getHttpUrl());
     }
 
     /**
@@ -360,19 +293,10 @@ class Setup {
     }
 
     /**
-     * @param bool $use_deprecated
-     * @return void
-     */
-    public static function useDeprecated($use_deprecated)
-    {
-        self::$use_deprecated = $use_deprecated;
-    }
-
-    /**
      * @param string $suffix
      * @return string
      */
-    public static function getRootPath($suffix = null)
+    public static function rootPath($suffix = null)
     {
         $root_path = self::$root_path;
         $suffix = str_replace($root_path, '', $suffix); //remove duplicate abspath
@@ -383,7 +307,7 @@ class Setup {
      * @param string $suffix
      * @return string
      */
-    public static function getPlatformPath($suffix = null)
+    public static function platformPath($suffix = null)
     {
         return self::getPath('platform_path', $suffix);
     }
@@ -392,7 +316,7 @@ class Setup {
      * @param string $suffix
      * @return string
      */
-    public static function getPlatformUri($suffix = null)
+    public static function platformUri($suffix = null)
     {
         return self::getPath('platform_path', $suffix, true);
     }
@@ -401,7 +325,7 @@ class Setup {
      * @param string $suffix
      * @return string
      */
-    public static function getAppPath($suffix = null)
+    public static function appPath($suffix = null)
     {
         return self::getPath('app_path', $suffix);
     }
@@ -410,7 +334,7 @@ class Setup {
      * @param string $suffix
      * @return string
      */
-    public static function getTemplatePath($suffix = null)
+    public static function templatePath($suffix = null)
     {
         return self::getPath('template_path', $suffix);
     }
@@ -419,7 +343,7 @@ class Setup {
      * @param string $suffix
      * @return string
      */
-    public static function getCachePath($suffix = null)
+    public static function cachePath($suffix = null)
     {
         return self::getPath('cache_path', $suffix);
     }
@@ -428,9 +352,79 @@ class Setup {
      * @param string $suffix
      * @return string
      */
-    public static function getCacheUri($suffix = null)
+    public static function cacheUri($suffix = null)
     {
         return self::getPath('cache_path', $suffix, true);
+    }
+
+    /**
+     * @deprecated
+     * @param string $suffix
+     * @return string
+     */
+    public static function getRootPath($suffix = null)
+    {
+        return self::rootPath($suffix);
+    }
+
+    /**
+     * @deprecated
+     * @param string $suffix
+     * @return string
+     */
+    public static function getPlatformPath($suffix = null)
+    {
+        return self::platformPath($suffix);
+    }
+
+    /**
+     * @deprecated
+     * @param string $suffix
+     * @return string
+     */
+    public static function getPlatformUri($suffix = null)
+    {
+        return self::platformUri($suffix, true);
+    }
+
+    /**
+     * @deprecated
+     * @param string $suffix
+     * @return string
+     */
+    public static function getAppPath($suffix = null)
+    {
+        return self::appPath($suffix);
+    }
+
+    /**
+     * @deprecated
+     * @param string $suffix
+     * @return string
+     */
+    public static function getTemplatePath($suffix = null)
+    {
+        return self::templatePath($suffix);
+    }
+
+    /**
+     * @deprecated
+     * @param string $suffix
+     * @return string
+     */
+    public static function getCachePath($suffix = null)
+    {
+        return self::cachePath($suffix);
+    }
+
+    /**
+     * @deprecated
+     * @param string $suffix
+     * @return string
+     */
+    public static function getCacheUri($suffix = null)
+    {
+        return self::cacheUri($suffix, true);
     }
 
     /**
@@ -474,32 +468,6 @@ class Setup {
     public static function getDefaultLang()
     {
         return self::$default_lang;
-    }
-
-    /**
-     * @param string $email
-     * @return string
-     */
-    public static function filterMailFrom($email)
-    {
-        if (self::$from_email) {
-            return self::$from_email;
-        } else {
-            return $email;
-        }
-    }
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    public static function filterMailName($name)
-    {
-        if (self::$from_name) {
-            return self::$from_name;
-        } else {
-            return $name;
-        }
     }
 
 }

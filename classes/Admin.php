@@ -1,6 +1,8 @@
 <?php
 namespace Platform;
 
+use Platform\Html;
+
 class Admin {
 
     /**
@@ -22,7 +24,7 @@ class Admin {
             return false;
         }
 
-        $file = Setup::getRootPath().'/'.Security::escHTML($_GET['page']).'.php';
+        $file = Setup::getRootPath().'/'.Html::entities($_GET['page']).'.php';
 
         if (!file_exists($file)) {
             return false;

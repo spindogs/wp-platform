@@ -1,9 +1,9 @@
 <?php
 use Platform\Setup;
 use Platform\Translation;
-use Platform\Security;
 use Platform\Request;
-use Platform\Beta\Collection;
+use Platform\Collection;
+use Platform\Html;
 
 //edit form
 if (isset($_POST['translations'])) {
@@ -40,7 +40,7 @@ require('admin-header.php');
                         Key
                     </th>
                     <th style="width:50%">
-                        Translation (<?= Security::escHTML($lang_name); ?>)
+                        Translation (<?= Html::entities($lang_name); ?>)
                     </th>
                     <th></th>
                 </tr>
@@ -49,10 +49,10 @@ require('admin-header.php');
             <?php foreach ($translations as $translation) { ?>
                 <tr>
                     <td>
-                        <?= Security::escHTML($translation->uid); ?>
+                        <?= Html::entities($translation->uid); ?>
                     </td>
                     <td>
-                        <input type="text" name="translations[<?= intval($translation->id); ?>][langs][<?= Security::escHTML($lang); ?>]" value="<?= Security::escHTML($translation->value); ?>" style="width:100%">
+                        <input type="text" name="translations[<?= intval($translation->id); ?>][langs][<?= Html::entities($lang); ?>]" value="<?= Html::entities($translation->value); ?>" style="width:100%">
                     </td>
                     <td>
                         <button type="submit">Save</button>

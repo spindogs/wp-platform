@@ -1,10 +1,11 @@
 <?php
-namespace Platform\Beta;
+namespace Platform;
 
 use Platform\Filter;
 use Platform\Security;
 use Platform\Mysql;
-use Platform\Beta\Collection;
+use Platform\Collection;
+use Platform\Date;
 
 class Model {
 
@@ -142,7 +143,7 @@ class Model {
 
             switch ($type) {
                 case self::DATETIME:
-                    $this->{$key} = Filter::datetime($this->{$key});
+                    $this->{$key} = Date::datetime($this->{$key});
                 break;
             }
 
@@ -259,7 +260,7 @@ class Model {
 
             switch ($type) {
                 case self::DATETIME:
-                    $values[$key] = Filter::mysqltime($values[$key]);
+                    $values[$key] = Date::mysqltime($values[$key]);
                 break;
             }
 
