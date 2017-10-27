@@ -7,6 +7,24 @@ class PostType {
     protected static $models = array();
 
     /**
+     * @param WP_Post $post
+     */
+    public function __construct($post)
+    {
+        foreach (get_object_vars($post) as $key => $value) {
+            $this->{$key} = $value;
+        }
+
+        $custom_fields = get_fields($this->ID);
+
+        foreach ($custom_fields as $key => $value) {
+            $this->{$key} = $value;
+        }
+
+        $this->url = get_permalink($this->ID);
+    }
+
+    /**
      * @return void
      */
     public static function setup()
@@ -35,7 +53,7 @@ class PostType {
         }
 
         $custom_type = static::$custom_type;
-        $post_type = $wp_query->get('post_type');
+        $query_type = $wp_query->get('post_type');
 
         if (
             !$wp_query->is_posts_page &&
@@ -49,7 +67,7 @@ class PostType {
             !$wp_query->is_home
         ) {
 
-            if ($post_type != $custom_type) {
+            if ($query_type != $custom_type) {
                 return;
             }
 
@@ -94,6 +112,17 @@ class PostType {
         $wp_query->reset_postdata();
 
         $GLOBALS['wp_the_query'] = $wp_query;
+    }
+
+    /**
+     * @param int $id
+     * @return self
+     */
+    public static function getById($id)
+    {
+        $post = get_post($id);
+        $model = new static($post);
+        return $model;
     }
 
 }
