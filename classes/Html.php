@@ -25,6 +25,30 @@ class Html {
     }
 
     /**
+     * @param mixed $number
+     * @param boolean $hide_cents
+     * @return string
+     */
+    public static function currency($number, $hide_cents = false)
+    {
+        if (strpos($number, '.') !== false ) {
+
+            $fraction = strstr($number, '.', false);
+            $fraction = ltrim($fraction, '.');
+            $fraction = intval($fraction);
+
+            if ($fraction == 0 && $hide_cents) {
+                return number_format($number, 0);
+            } else {
+                return number_format($number, 2);
+            }
+
+        } else {
+            return number_format($number, 2);
+        }
+    }
+
+    /**
      * @param string $str
      * @param int $limit
      * @return string
