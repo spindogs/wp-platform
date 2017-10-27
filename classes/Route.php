@@ -114,6 +114,7 @@ class Route {
         foreach ($rules as $route) {
 
             $rule = $route->regex;
+            $rule = trim($rule, '/');
             $rule = trim($rule, '^');
             $rule = trim($rule, '$');
             $rule = str_replace('/', '\/', $rule);

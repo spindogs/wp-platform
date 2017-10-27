@@ -140,11 +140,9 @@ class Setup {
      */
     public static function router()
     {
-        $router = 'App\\Routes';
-
-        if (class_exists($router)) {
-            $router::register();
-            $router::dispatch();
+        if (class_exists('\\App\\Routes')) {
+            \App\Routes::register();
+            \App\Routes::dispatch();
         } else {
             return;
         }
