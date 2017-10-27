@@ -1638,9 +1638,29 @@ class Form {
     /**
      * @return void
      */
+    public function clearErrors()
+    {
+        $this->errors = [];
+
+        if ($this->is_submitted) {
+            $this->has_success = true;
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function stopSubmit()
+    {
+        $this->is_submitted = false;
+        $this->has_success = false;
+    }
+
+    /**
+     * @return void
+     */
     public function open()
     {
-
         //make action url
         $action = $this->action;
         $action .= ($this->keep_gets ? self::getRequestQuery() : '');
@@ -1653,6 +1673,7 @@ class Form {
         echo 'enctype="multipart/form-data">';
         echo "\n";
 
+        $this->putHidden();
     }
 
     /**
