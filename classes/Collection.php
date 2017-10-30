@@ -1,7 +1,7 @@
 <?php
 namespace Platform;
 
-use Platform\Security;
+use Platform\Sql;
 use Platform\Model;
 
 class Collection {
@@ -351,7 +351,7 @@ class Collection {
         }
 
         $table = $this->model->getTable();
-        $q_table = Security::escCol($table);
+        $q_table = Sql::tick($table);
         $q = str_replace('{table}', $q_table, $q);
         $this->sql = $q;
     }
@@ -416,7 +416,7 @@ class Collection {
                 $q_where_sub = '';
 
                 foreach ($val as $val_sub) {
-                    $q_where_sub .= Security::escCol($column).' = '.Security::escSql($val_sub);
+                    $q_where_sub .= Sql::tick($column).' = '.Sql::quote($val_sub);
                     $q_where_sub .= ' OR ';
                 }
 
@@ -426,22 +426,22 @@ class Collection {
 
             } elseif ($operator == 'LIKE') {
                 $val = '%'.$val.'%';
-                $q_where = ' AND '.Security::escCol($column).' LIKE '.Security::escSql($val).'';
+                $q_where = ' AND '.Sql::tick($column).' LIKE '.Sql::quote($val).'';
 
             } elseif ($operator == 'NULL') {
-                $q_where = ' AND '.Security::escCol($column).' IS NULL';
+                $q_where = ' AND '.Sql::tick($column).' IS NULL';
 
             } elseif ($operator == 'NOTNULL') {
-                $q_where = ' AND '.Security::escCol($column).' IS NOT NULL';
+                $q_where = ' AND '.Sql::tick($column).' IS NOT NULL';
 
             } elseif ($type == Model::INTEGER) {
-                $q_where = ' AND '.Security::escCol($column).' '.$operator.' '.intval($val).'';
+                $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.intval($val).'';
 
             } elseif ($type == Model::FLOAT) {
-                $q_where = ' AND '.Security::escCol($column).' '.$operator.' '.floatval($val).'';
+                $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.floatval($val).'';
 
             } elseif ($type == Model::STRING) {
-                $q_where = ' AND '.Security::escCol($column).' '.$operator.' '.Security::escSql($val).'';
+                $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.Sql::quote($val).'';
             }
 
             $q = str_replace($tag, $q_where.$tag, $q);

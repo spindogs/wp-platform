@@ -3,7 +3,7 @@ namespace Platform;
 
 use DateTime;
 use Platform\Setup;
-use Platform\Mysql;
+use Platform\Sql;
 use Platform\Model;
 use Platform\Collection;
 
@@ -70,7 +70,7 @@ class Translation extends Model {
             $values['translation_id'] = $this->id;
             $values['lang'] = $lang;
             $values['value'] = $val;
-            Mysql::autoCreate($values, '_TranslationLang', 'UPDATE', false);
+            Sql::autoCreate($values, '_TranslationLang', 'UPDATE', false);
         }
 
     }

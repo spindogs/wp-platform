@@ -1,18 +1,19 @@
 <?php
 namespace Platform;
 
+use ReflectionClass;
+use ReflectionProperty;
 use Platform\Filter;
-use Platform\Security;
-use Platform\Mysql;
+use Platform\Sql;
 use Platform\Collection;
 use Platform\Date;
 
 class Model {
 
-    const INTEGER = 'integer';
-    const STRING = 'string';
-    const FLOAT = 'float';
-    const DATETIME = 'datetime';
+    const INTEGER = 000001;
+    const STRING = 000002;
+    const FLOAT = 000003;
+    const DATETIME = 000004;
 
     //protected static $table;
     //protected static $cache_by_key;
@@ -217,11 +218,11 @@ class Model {
 
             $values = array();
             $values[$delete_column] = 1;
-            Mysql::autoUpdate($values, $this->id, $table);
+            Sql::autoUpdate($values, $this->id, $table);
 
         } else {
 
-            $q = 'DELETE FROM '.Security::escCol($table).'
+            $q = 'DELETE FROM '.Sql::tick($table).'
                     WHERE id = '.intval($this->id).'';
 
             if (isset($Database)) {
@@ -267,9 +268,9 @@ class Model {
         }
 
         if ($this->id) {
-            Mysql::autoUpdate($values, $this->id, $table, true);
+            Sql::autoUpdate($values, $this->id, $table, true);
         } else {
-            $this->id = Mysql::autoCreate($values, $table, '', true);
+            $this->id = Sql::autoCreate($values, $table, '', true);
         }
 
         return $this->id;
@@ -373,6 +374,39 @@ class Model {
     public static function getCacheKey()
     {
         return static::getSetting('cache_by_key');
+    }
+
+    /**
+     * @return void
+     */
+    public static function install()
+    {
+        $static = get_called_class();
+        $class = new ReflectionClass($static);
+        $properties = $class->getProperties(ReflectionProperty::IS_PUBLIC);
+        $prev_property = false;
+        $table = $static::$table;
+
+        foreach ($properties as $property) {
+
+            if ($property->class != $static) {
+                continue; //ignore inherited properties
+            }
+
+            $column = $property->name;
+            $type = 'VARCHAR(255) NOT NULL';
+            $attrs = array();
+
+            if ($prev_property) {
+                $attrs['after'] = $prev_property;
+            }
+
+            Sql::addColumn($table, $column, $type, $attrs);
+            $prev_property = $column;
+
+        }
+
+        echo 'Install complete'."\n";
     }
 
 }
