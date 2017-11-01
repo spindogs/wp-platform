@@ -70,6 +70,10 @@ class Html {
      */
     public static function purify($html)
     {
+        if (function_exists('apply_filters')) {
+            return apply_filters('the_content', $html);
+        }
+
         return $html;
         // $config = HTMLPurifier\Config::createDefault();
         // $config->set('HTML.TidyLevel', 'none'); // Only XSS cleaning now
