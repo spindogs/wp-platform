@@ -1686,6 +1686,19 @@ class Form {
     }
 
     /**
+     * @param string $name
+     * @return void
+     */
+    public function hasError($name)
+    {
+        if (isset($this->errors[$name])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * @return void
      */
     public function putErrors()
