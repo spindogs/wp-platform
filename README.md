@@ -4,6 +4,14 @@ Install via composer:
 
     composer require spindogs/wp-platform
 
+Ensure you add the following PSR-4 autoloading location to your `composer.json` file:
+
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+
 ## Platform
 
 All classes are encapsulated in the namespace `Platform`.
