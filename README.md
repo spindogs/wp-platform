@@ -16,9 +16,72 @@ Ensure you add the following PSR-4 autoloading location to your `composer.json` 
 
 All classes are encapsulated in the namespace `Platform`.
 
+## Post Types
+
+To make a Wordpress custom post type create a new class in the namespace `App\PostType` that extends `Platform\PostType.php`. You can then register this new post type in `functions.php` using the `setup()` method:
+
+    <?php
+    namespace App\PostType;
+
+    use Platform\PostType;
+
+    class Example extends PostType {
+
+        protected static $custom_type = 'event';
+
+        /**
+         * @return void
+         */
+        public static function setup()
+        {
+            parent::setup();
+            self::registerPostType();
+        }
+
+        /**
+         * @return void
+         */
+        public static function registerPostType()
+        {
+            $labels = array(
+                'name' => 'Events',
+                'singular_name' => 'Event',
+                'add_new' => 'Add event',
+                'add_new_item' => 'Add event',
+                'edit_item' => 'Edit event',
+                'new_item' => 'New event',
+                'view_item' => 'View event',
+                'search_items' => 'Search events',
+                'not_found' => 'No events found',
+                'all_items' => 'List events',
+                'menu_name' => 'Events',
+                'name_admin_bar' => 'Event'
+            );
+            $args = array(
+                'labels' => $labels,
+                'public' => true,
+                'show_ui' => true,
+                'capability_type' => 'post',
+                'menu_icon' => 'dashicons-calendar-alt',
+                'hierarchical' => false,
+                'supports' => ['title', 'editor', 'author', 'thumbnail'],
+                'taxonomies' => [],
+                'has_archive' => true,
+                'rewrite' => ['slug' => 'events', 'with_front' => false]
+            );
+
+            register_post_type(self::$custom_type, $args);
+        }
+
+    }
+
+There are a number of helpful features going on behind the scenes when you register your custom post types in this manner.
+
+In particular it means that if a CMS page URL is created with a matching URL of the post_type archive then Wordpress will automatically load the CMS page into the global `$post` variable. This allows an editor to content manage fields on an archive page that is not possible with core Wordpress alone.
+
 ## Routing
 
-Create a class called `App\Routes.php` which extends `Platform\Route.php`. All rules should be placed in the `Routes::register()` method as below:
+Create a class called `App\Routes.php` that extends `Platform\Route.php`. All rules should be placed in the `Routes::register()` method as below:
 
     <?php
     namespace App;
