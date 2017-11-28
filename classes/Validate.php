@@ -1,6 +1,7 @@
 <?php
 namespace Platform;
-use \DateTime;
+
+use DateTime;
 
 class Validate {
 
@@ -71,37 +72,6 @@ class Validate {
             return false;
         }
 
-    }
-
-    /**
-     * @deprecated
-     * @param string $haystack
-     * @param string $needle
-     * @return bool
-     */
-    public static function starts_with($haystack, $needle)
-    {
-        return self::startsWith($haystack, $needle);
-    }
-
-    /**
-     * @deprecated
-     * @param string $datetime
-     * @return bool
-     */
-    public static function date_past($datetime)
-    {
-        return self::datePast($datetime);
-    }
-
-    /**
-     * @deprecated
-     * @param string $datetime
-     * @return bool
-     */
-    public static function date_future($datetime)
-    {
-        return self::dateFuture($datetime);
     }
 
 }
