@@ -12,9 +12,21 @@ Ensure you add the following PSR-4 autoloading location to your `composer.json` 
         }
     }
 
+Assuming your `vendor` directory is in your theme root, add the following line to `functions.php` to hook up the composer autoloading to your theme:
+
+    require('vendor/autoload.php');
+
 ## Platform
 
 All platform classes can be accessed via the namespace `Platform`.
+
+To setup the platform for Wordpress add the following line to your `functions.php`:
+
+    Platform\Setup::setupWordpress();
+
+If you are using the platform outside of Wordpress you must call the following method instead to run some core setup routines:
+
+    Platform\Setup::setup();
 
 ## Post Types
 
@@ -77,11 +89,13 @@ To make a Wordpress custom post type create a new class in the namespace `App\Po
 
 You can then register this new post type in `functions.php` using the `setup()` method:
 
-    <?php
-    //functions.php
     App\PostType\Event::setup();
 
-There are a number of helpful features going on behind the scenes when you register your custom post types in this manner. In particular it means that if a CMS page URL is created with a matching URL of the post_type archive then Wordpress will automatically load the CMS page into the global `$post` variable. This allows an editor to content manage fields on an archive page that is not possible with core Wordpress alone.
+There are a number of helpful features going on behind the scenes when you register your custom post types in this manner. In particular it means that if a CMS page URL is created with a matching URL of the post_type rewrite slug then Wordpress will automatically load the CMS page into the global `$post` variable.
+
+For example, if your post_type has the rewrite slug `/events/` and a visitor accesses the archive page for this post_type then the platform will attempt to load a CMS page with the url `/events/`.
+
+This allows an editor to content manage fields on an archive page that is not possible with core Wordpress alone.
 
 ## Routing
 
