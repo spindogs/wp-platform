@@ -15,7 +15,7 @@ if (isset($_POST['translations'])) {
 }
 
 //get lang
-$lang = Setup::getLang();
+$lang = Setup::app()->lang;
 $lang_name = get_bloginfo('name');
 
 //get translations

@@ -273,6 +273,17 @@ class Setup {
     }
 
     /**
+     * @return stdClass
+     */
+    public static function root()
+    {
+        return (object)[
+            'path' => self::getPath('root_path', null, null),
+            'uri' =>  self::getPath('root_path', null, true),
+        ];
+    }
+
+    /**
      * @param string $suffix
      * @return string
      */
@@ -281,6 +292,17 @@ class Setup {
         $root_path = self::$root_path;
         $suffix = str_replace($root_path, '', $suffix); //remove duplicate abspath
         return self::getPath('root_path', $suffix);
+    }
+
+    /**
+     * @return stdClass
+     */
+    public static function platform()
+    {
+        return (object)[
+            'path' => self::getPath('platform_path', null, null),
+            'uri' =>  self::getPath('platform_path', null, true),
+        ];
     }
 
     /**
@@ -302,6 +324,19 @@ class Setup {
     }
 
     /**
+     * @return stdClass
+     */
+    public static function app()
+    {
+        return (object)[
+            'path' => self::getPath('app_path', null, null),
+            'uri' =>  self::getPath('app_path', null, true),
+            'default_lang' => self::$default_lang,
+            'lang' => self::$lang,
+        ];
+    }
+
+    /**
      * @param string $suffix
      * @return string
      */
@@ -311,12 +346,34 @@ class Setup {
     }
 
     /**
+     * @return stdClass
+     */
+    public static function template()
+    {
+        return (object)[
+            'path' => self::getPath('template_path', null, null),
+            'uri' =>  self::getPath('template_path', null, true),
+        ];
+    }
+
+    /**
      * @param string $suffix
      * @return string
      */
     public static function templatePath($suffix = null)
     {
         return self::getPath('template_path', $suffix);
+    }
+
+    /**
+     * @return stdClass
+     */
+    public static function cache()
+    {
+        return (object)[
+            'path' => self::getPath('cache_path', null, null),
+            'uri' =>  self::getPath('cache_path', null, true),
+        ];
     }
 
     /**
@@ -335,6 +392,33 @@ class Setup {
     public static function cacheUri($suffix = null)
     {
         return self::getPath('cache_path', $suffix, true);
+    }
+
+    /**
+     * @param string $name
+     * @param string $suffix
+     * @param bool $is_uri
+     * @return string
+     */
+    protected static function getPath($name, $suffix = null, $is_uri = false)
+    {
+        $suffix = trim($suffix, '/');
+
+        if ($suffix) {
+            $suffix = '/'.$suffix;
+        } else {
+            $suffix = '';
+        }
+
+        $rtn = self::${$name};
+        $rtn .= $suffix;
+
+        if ($is_uri) {
+            $root_path = self::$root_path;
+            $rtn = str_replace($root_path, '', $rtn);
+        }
+
+        return $rtn;
     }
 
     /**
@@ -405,33 +489,6 @@ class Setup {
     public static function getCacheUri($suffix = null)
     {
         return self::cacheUri($suffix, true);
-    }
-
-    /**
-     * @param string $name
-     * @param string $suffix
-     * @param bool $is_uri
-     * @return string
-     */
-    protected static function getPath($name, $suffix = null, $is_uri = false)
-    {
-        $suffix = trim($suffix, '/');
-
-        if ($suffix) {
-            $suffix = '/'.$suffix;
-        } else {
-            $suffix = '';
-        }
-
-        $rtn = self::${$name};
-        $rtn .= $suffix;
-
-        if ($is_uri) {
-            $root_path = self::getRootPath();
-            $rtn = str_replace($root_path, '', $rtn);
-        }
-
-        return $rtn;
     }
 
 }

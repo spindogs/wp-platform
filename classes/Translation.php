@@ -81,14 +81,12 @@ class Translation extends Model {
      */
     public static function build($lang = null)
     {
-        if (!Setup::getDefaultLang()) {
+        if (!Setup::app()->default_lang) {
             return; //need to set default lang to active translations
         }
-
         if (!$lang) {
-            $lang = Setup::getLang();
+            $lang = Setup::app()->lang;
         }
-
         if (isset(self::$cache[$lang])) {
             return;
         }
@@ -118,7 +116,7 @@ class Translation extends Model {
      */
     public static function get($uid, ...$params)
     {
-        $lang = Setup::getLang();
+        $lang = Setup::app()->lang;
         $translation = self::getByLang($uid, $lang);
 
         $rtn = sprintf($translation, ...$params);
@@ -137,7 +135,7 @@ class Translation extends Model {
     {
         self::build($lang);
 
-        $default_lang = Setup::getDefaultLang();
+        $default_lang = Setup::app()->default_lang;
 
         if (isset(self::$cache[$lang][$uid])) {
             $translation = self::$cache[$lang][$uid];
@@ -188,7 +186,7 @@ class Translation extends Model {
             'Translations',
             'Translations',
             'publish_pages',
-            Setup::getPlatformUri().'/admin/translation-list',
+            Setup::platform()->uri.'/admin/translation-list',
             function(){},
             'dashicons-editor-alignleft',
             81
