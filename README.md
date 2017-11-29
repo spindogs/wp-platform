@@ -232,6 +232,24 @@ Alternatively, you can grab a single object using the following method:
 
     $order = $collection->getSingle();
 
+## Translations
+
+The platform comes with built in interfaces to allow the translating of static strings used in your templates. This mechanism assumes a multisite setup whereby each site installation corresponds to a different language (eg. English, Welsh).
+
+To use the functionality, first create the translation database tables by calling the following method once only:
+
+    Platform\Translation::install();
+
+To activate the admin interfaces, simply add the following line to your `functions.php` to set the default language to your primary multisite installation:
+
+    Platform\Setup::defaultLang(1);
+
+Finally, ensure you wrap all the static strings in your templates with the `Translation::_()` method. To make your code more readable could always assign a shorter alias for the translation class:
+
+    <?php
+    use Platform\Translation as T;
+    echo '<h1>'.T::_('Hello world').'</h1>';
+
 ## Helpers
 
 There are a number of different helper functions available:

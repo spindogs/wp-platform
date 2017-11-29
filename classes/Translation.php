@@ -9,7 +9,7 @@ use Platform\Collection;
 
 class Translation extends Model {
 
-    protected static $table = '_Translations';
+    protected static $table = 'Translations';
     protected static $cache = [];
     protected static $debug;
 
@@ -29,8 +29,8 @@ class Translation extends Model {
                     t.*,
                     tl.lang AS lang,
                     tl.value AS `value`
-                FROM _Translations AS t
-                LEFT JOIN _TranslationLang AS tl
+                FROM Translations AS t
+                LEFT JOIN TranslationLang AS tl
                     ON tl.translation_id = t.id
                     {where_lang}
                 WHERE 1=1
@@ -61,16 +61,16 @@ class Translation extends Model {
      */
     protected function save()
     {
-        //_Translations
+        //Translations
         parent::save();
 
-        //_TranslationLang
+        //TranslationLang
         foreach ($this->langs as $lang => $val) {
             $values = [];
             $values['translation_id'] = $this->id;
             $values['lang'] = $lang;
             $values['value'] = $val;
-            Sql::autoCreate($values, '_TranslationLang', 'UPDATE', false);
+            Sql::autoCreate($values, 'TranslationLang', 'UPDATE', false);
         }
 
     }
@@ -203,25 +203,25 @@ class Translation extends Model {
 
         $q = [];
 
-        $q[] = 'CREATE TABLE `_Translations` (
+        $q[] = 'CREATE TABLE `Translations` (
                     `id` int(11) NOT NULL,
                     `uid` varchar(255) NOT NULL,
                     `date_accessed` datetime NOT NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8';
 
-        $q[] = 'ALTER TABLE `_Translations`
+        $q[] = 'ALTER TABLE `Translations`
                 ADD PRIMARY KEY (`id`)';
 
-        $q[] = 'ALTER TABLE `_Translations`
+        $q[] = 'ALTER TABLE `Translations`
                 MODIFY `id` int(11) NOT NULL AUTO_INCREMENT';
 
-        $q[] = 'CREATE TABLE `_TranslationLang` (
+        $q[] = 'CREATE TABLE `TranslationLang` (
                     `translation_id` int(11) NOT NULL,
                     `lang` varchar(255) NOT NULL,
                     `value` text NOT NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8';
 
-        $q[] = 'ALTER TABLE `_TranslationLang`
+        $q[] = 'ALTER TABLE `TranslationLang`
                 ADD PRIMARY KEY (`translation_id`,`lang`) USING BTREE';
 
         foreach ($q as $sql) {
