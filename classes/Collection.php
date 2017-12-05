@@ -288,10 +288,12 @@ class Collection {
             $cache_search = false;
         } elseif (!property_exists($model_name, $cache_key)) {
             $cache_search = false;
-        } elseif (empty($this->where[$cache_key])) {
+        } elseif (empty($this->where[$cache_key]['filter'])) {
+            $cache_search = false;
+        } elseif (empty($this->where[$cache_key]['operator']) || $this->where[$cache_key]['operator'] != '=') {
             $cache_search = false;
         } else {
-            $cache_search = $this->where[$cache_key];
+            $cache_search = $this->where[$cache_key]['filter'];
         }
 
         if (!$cache_search) {
