@@ -113,8 +113,8 @@ class Setup {
         add_action('init', array(__CLASS__, 'sessionStart'), 1);
 
         //router
-        add_filter('template_redirect', array(__CLASS__, 'router'), -10);
-        add_filter('admin_menu', array(__CLASS__, 'router'));
+        add_action('send_headers', array(__CLASS__, 'router'), -10);
+        add_action('admin_menu', array(__CLASS__, 'router'));
 
         //error handler
         error_reporting(E_ALL | E_STRICT);
