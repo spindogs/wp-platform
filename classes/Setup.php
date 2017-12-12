@@ -110,10 +110,10 @@ class Setup {
         add_theme_support('post-thumbnails');
 
         //session start
-        add_action('init', array(__CLASS__, 'sessionStart'), 1);
+        add_action('after_setup_theme', array(__CLASS__, 'sessionStart'));
 
         //router
-        add_action('after_setup_theme', array(__CLASS__, 'router'), -10);
+        add_action('after_setup_theme', array(__CLASS__, 'router'));
         add_action('admin_menu', array(__CLASS__, 'router'));
 
         //error handler
