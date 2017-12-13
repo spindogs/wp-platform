@@ -98,8 +98,13 @@ class Setup {
         add_action('after_setup_theme', array(__CLASS__, 'sessionStart'));
 
         //router
-        add_action('after_setup_theme', array(__CLASS__, 'router'));
-        add_action('admin_menu', array(__CLASS__, 'router'));
+        $path_to_page = Request::path();
+
+        if ($path_to_page == '/wp-admin/admin.php') {
+            add_action('admin_menu', array(__CLASS__, 'router'));
+        } else {
+            add_action('after_setup_theme', array(__CLASS__, 'router'));
+        }
 
         //error handler
         error_reporting(E_ALL | E_STRICT);
