@@ -33,12 +33,7 @@ class Route {
     {
         $this->controller = $controller;
         $this->action = $action;
-
-        if ($this->is_admin) {
-            self::$admin_rules[] = $this;
-        } else {
-            self::$rules[] = $this;
-        }
+        self::$rules[] = $this;
     }
 
     /**
@@ -57,6 +52,8 @@ class Route {
      */
     public static function admin($regex)
     {
+        $regex = ltrim($regex, '/');
+        $regex = 'wp-admin/'.$regex;
         $route = new self();
         $route->regex = $regex;
         $route->is_admin = true;
@@ -71,42 +68,14 @@ class Route {
         //get request path
         $path_to_page = Request::path();
 
-        //determine if page is admin
-        if ($path_to_page == '/wp-admin/admin.php') {
-            $is_admin = true;
-        } else {
-            $is_admin = false;
+        if (!static::$rules) {
+            return; //no routes to match
         }
 
-        //standardise uri
-        if ($is_admin) {
-
-            if (!static::$admin_rules) {
-                return; //no routes to match
-            }
-            if (empty($_GET['page'])) {
-                return; //no admin uri to match
-            }
-
-            $uri = $_GET['page'];
-            $uri .= '/';
-            $uri .= Filter::nullify($_GET['subpage']);
-            $uri = trim($uri, '/');
-            $uri = strtolower($uri);
-            $rules = static::$admin_rules;
-
-        } else {
-
-            if (!static::$rules) {
-                return; //no routes to match
-            }
-
-            $uri = $path_to_page;
-            $uri = trim($uri, '/');
-            $uri = strtolower($uri);
-            $rules = static::$rules;
-
-        }
+        $uri = $path_to_page;
+        $uri = trim($uri, '/');
+        $uri = strtolower($uri);
+        $rules = static::$rules;
 
         //see if the url matches any rules
         $matches = array();
@@ -127,6 +96,7 @@ class Route {
         }
 
         //print_r($matches);exit;
+        //print_r($route);exit;
 
         if (!$matches) {
             return;
@@ -139,15 +109,7 @@ class Route {
         $route->params = $params;
         self::$current_route = $route;
 
-        if ($is_admin) {
-            add_submenu_page(null, null, null, 'publish_pages', $uri, ['Platform\Admin', 'router']);
-            $uri_split = explode('/', $uri);
-            $GLOBALS['plugin_page'] = reset($uri_split);
-            add_action('admin_init', [__CLASS__, 'dispatchToController']);
-        } else {
-            self::dispatchToController();
-        }
-
+        self::dispatchToController();
     }
 
     /**
@@ -156,6 +118,13 @@ class Route {
     public static function dispatchToController()
     {
         $route = self::$current_route;
+
+        if ($route->is_admin) {
+            global $menu;
+            $_POST['stop_wp_upgrade_message'] = true;
+            require(ABSPATH.'/wp-admin/admin.php');
+        }
+
         $action = $route->action;
         $params = $route->params;
         $controller_name = $route->controller;
