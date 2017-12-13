@@ -250,6 +250,45 @@ Finally, ensure you wrap all the static strings in your templates with the `Tran
     use Platform\Translation as T;
     echo '<h1>'.T::_('Hello world').'</h1>';
 
+## Admin
+
+From time to time you may want to add custom interfaces to the wordpress back office. You can do this by setting up routes in `App\Routes.php` using the `Routes::admin()` method:
+
+> Note - please be aware that slashses `/` are not valid in admin routes - you can only use the following  characters `a-z` `0-9` `_` `-`
+
+    <?php
+    namespace App;
+
+    use Platform\Route;
+
+    class Routes extends Route {
+
+        /**
+         * @return void
+         */
+        public static function register()
+        {
+            self::admin('admin--orders')->call('AdminController', 'orders');
+        }
+
+    }
+
+You can then register a new admin menu item using the following wordpress function:
+
+    add_menu_page(
+        'Orders',
+        'Orders',
+        'publish_pages',
+        'admin--orders',
+        null,
+        'dashicons-products',
+        50
+    );
+
+Please note that all admin routes are accessed through the `wp-admin/admin.php?page=` url. For example:
+
+    /wp-admin/admin.php?page=admin--orders
+
 ## Helpers
 
 There are a number of different helper functions available:
