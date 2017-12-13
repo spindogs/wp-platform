@@ -17,16 +17,6 @@ class Route {
     protected $is_admin;
 
     /**
-    * @return Route
-    */
-    public function subpage($regex)
-    {
-        $regex = trim($regex, '/');
-        $this->regex .= '/'.$regex;
-        return $this;
-    }
-
-    /**
     * @return void
     */
     public function call($controller, $action)
@@ -121,6 +111,14 @@ class Route {
 
         if ($route->is_admin) {
             global $menu;
+            $path_to_page = Request::path();
+            $uri = $path_to_page;
+            $uri = trim($uri, '/');
+            $uri = strtolower($uri);
+            $uri = str_replace('wp-admin/', '', $uri);
+            $uri_split = explode('/', $uri);
+            $parent_file = reset($uri_split);
+            $GLOBALS['parent_file'] = $parent_file;
             $_POST['stop_wp_upgrade_message'] = true;
             require(ABSPATH.'/wp-admin/admin.php');
         }
