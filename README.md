@@ -280,7 +280,7 @@ You can then register a new admin menu item using the following wordpress functi
         'Orders',
         'publish_pages',
         'admin--orders',
-        null,
+        true,
         'dashicons-products',
         50
     );
