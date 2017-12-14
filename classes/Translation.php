@@ -6,6 +6,7 @@ use Platform\Setup;
 use Platform\Sql;
 use Platform\Model;
 use Platform\Collection;
+use Platform\Route;
 
 class Translation extends Model {
 
@@ -174,6 +175,7 @@ class Translation extends Model {
      */
     public static function setup()
     {
+        Route::admin('translations')->call('Platform\\Controller\\TranslationController', 'listAll');
         add_action('admin_menu', [__CLASS__, 'adminMenu']);
     }
 

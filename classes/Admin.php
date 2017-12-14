@@ -2,7 +2,6 @@
 namespace Platform;
 
 use Platform\Html;
-use Platform\Route;
 
 class Admin {
 
@@ -11,7 +10,6 @@ class Admin {
      */
     public static function setup()
     {
-        Route::admin('translations')->call('Platform\\Controller\\TranslationController', 'listAll');
         add_action('admin_enqueue_scripts', [__CLASS__, 'css']);
         add_action('dashboard_glance_items', [__CLASS__, 'dashboardPostTypes']);
     }
