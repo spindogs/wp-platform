@@ -78,7 +78,7 @@ class Setup {
     {
         //paths
         self::$root_path = rtrim(ABSPATH, '/');
-        self::$platform_path = WP_PLUGIN_DIR.'/wp-platform';
+        self::$platform_path = dirname(dirname(__FILE__));
         self::$app_path = get_template_directory().'/app';
         self::$template_path = get_template_directory();
         self::$cache_path = WP_CONTENT_DIR.'/cache';
