@@ -243,6 +243,7 @@ To use the functionality, first create the translation database tables by callin
 To activate the admin interfaces, simply add the following line to your `functions.php` to set the default language to your primary multisite installation:
 
     Platform\Setup::defaultLang(1);
+    Platform\Translation::setup();
 
 Finally, ensure you wrap all the static strings in your templates with the `Translation::_()` method. To make your code more readable could always assign a shorter alias for the translation class:
 
