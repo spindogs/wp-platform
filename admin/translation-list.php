@@ -1,37 +1,15 @@
 <?php
-use Platform\Setup;
-use Platform\Translation;
 use Platform\Request;
-use Platform\Collection;
 use Platform\Html;
 
-//edit form
-if (isset($_POST['translations'])) {
-    foreach ($_POST['translations'] as $id => $values) {
-        $translation = new Translation($id);
-        $translation->map($values);
-        $translation->update();
-    }
-}
-
-//get lang
-$lang = Setup::app()->lang;
-$lang_name = get_bloginfo('name');
-
-//get translations
-$collection = new Collection(Translation::class);
-$collection->where('lang', $lang);
-$translations = $collection->getAll();
-
-//header
-require('admin-header.php');
+require(ABSPATH.'wp-admin/admin-header.php');
 ?>
 
 <div class="wrap">
 
     <h2>Translations</h2>
 
-    <form action="<?= Request::get(); ?>" method="post">
+    <form method="post">
         <table class="wp-list-table widefat">
 
             <thead>
@@ -42,7 +20,8 @@ require('admin-header.php');
                     <th style="width:50%">
                         Translation (<?= Html::entities($lang_name); ?>)
                     </th>
-                    <th></th>
+                    <th>
+                    </th>
                 </tr>
             </thead>
 
@@ -58,11 +37,11 @@ require('admin-header.php');
                         <button type="submit">Save</button>
                     </td>
                 </tr>
-            <? } ?>
+            <?php } ?>
 
         </table>
     </form>
 </div><!--wrap-->
 
 <?php
-require('admin-footer.php');
+require(ABSPATH.'wp-admin/admin-footer.php');

@@ -2,6 +2,7 @@
 namespace Platform;
 
 use Platform\Html;
+use Platform\Route;
 
 class Admin {
 
@@ -10,28 +11,9 @@ class Admin {
      */
     public static function setup()
     {
-        add_action('admin_init', [__CLASS__, 'controller']);
+        Route::admin('translations')->call('Platform\\Controller\\TranslationController', 'listAll');
         add_action('admin_enqueue_scripts', [__CLASS__, 'css']);
         add_action('dashboard_glance_items', [__CLASS__, 'dashboardPostTypes']);
-    }
-
-    /**
-     * @return void
-     */
-    public static function controller()
-    {
-        if (empty($_GET['page'])) {
-            return false;
-        }
-
-        $file = Setup::getRootPath().'/'.Html::entities($_GET['page']).'.php';
-
-        if (!file_exists($file)) {
-            return false;
-        }
-
-        require($file);
-        exit;
     }
 
     /**

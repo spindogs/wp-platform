@@ -186,8 +186,8 @@ class Translation extends Model {
             'Translations',
             'Translations',
             'publish_pages',
-            Setup::platform()->uri.'/admin/translation-list',
-            function(){},
+            'translations',
+            null,
             'dashicons-editor-alignleft',
             81
         );

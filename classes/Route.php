@@ -126,7 +126,11 @@ class Route {
         $action = $route->action;
         $params = $route->params;
         $controller_name = $route->controller;
-        $controller_name = 'App\\Controller\\'.$controller_name;
+
+        if (!class_exists($controller_name)) {
+            $controller_name = 'App\\Controller\\'.$controller_name;
+        }
+
         $controller = new $controller_name();
         $controller->call($action, $params);
         exit;
