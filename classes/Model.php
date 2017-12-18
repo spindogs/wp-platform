@@ -315,6 +315,15 @@ class Model {
     }
 
     /**
+     * @return Collection
+     */
+    public static function collection()
+    {
+        $static = get_called_class();
+        return new Collection($static);
+    }
+
+    /**
      * @param string $id
      * @return self
      */
