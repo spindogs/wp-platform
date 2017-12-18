@@ -100,7 +100,11 @@ class Collection {
             $val = null;
         }
 
-        $this->where[$key] = [
+        if (!isset($this->where[$key])) {
+            $this->where[$key] = [];
+        }
+
+        $this->where[$key][] = [
             'filter' => $val,
             'operator' => $operator
         ];
@@ -332,12 +336,19 @@ class Collection {
             $cache_search = false;
         } elseif (!property_exists($model_name, $cache_key)) {
             $cache_search = false;
-        } elseif (empty($this->where[$cache_key]['filter'])) {
-            $cache_search = false;
-        } elseif (empty($this->where[$cache_key]['operator']) || $this->where[$cache_key]['operator'] != '=') {
+        } elseif (empty($this->where[$cache_key])) {
             $cache_search = false;
         } else {
-            $cache_search = $this->where[$cache_key]['filter'];
+            $cache_search = false;
+            foreach ($this->where[$cache_key] as $r) {
+                if (isset($r['filter']) &&
+                    isset($r['operator']) &&
+                    $r['operator'] == '='
+                ) {
+                    $cache_search = $r['filter'];
+                    break;
+                }
+            }
         }
 
         if (!$cache_search) {
@@ -463,58 +474,65 @@ class Collection {
                 continue; //dont need to filter by this field
             }
 
-            if (isset($this->where[$key])) {
-                $val = $this->where[$key]['filter'];
-                $operator = $this->where[$key]['operator'];
-            } else {
+            if (empty($this->where[$key])) {
                 continue; //dont need to filter by this field
             }
 
-            if (is_array($val)) {
-                $operator = 'IN'; //force array mode
-            }
+            foreach ($this->where[$key] as $r) {
 
-            if ($operator == 'IN') {
+                $val = $r['filter'];
+                $operator = $r['operator'];
 
-                if (!$val) {
-                    continue; //blank array
+                if (is_array($val)) {
+                    $operator = 'IN'; //force array mode
                 }
 
-                $q_where = ' AND (';
-                $q_where_sub = '';
+                if ($operator == 'IN') {
 
-                foreach ($val as $val_sub) {
-                    $q_where_sub .= Sql::tick($column).' = '.Sql::quote($val_sub);
-                    $q_where_sub .= ' OR ';
+                    if (!$val) {
+                        continue; //blank array
+                    }
+
+                    $q_where = ' AND (';
+                    $q_where_sub = '';
+
+                    foreach ($val as $val_sub) {
+                        $q_where_sub .= Sql::tick($column).' = '.Sql::quote($val_sub);
+                        $q_where_sub .= ' OR ';
+                    }
+
+                    $q_where_sub = substr($q_where_sub, 0, -4);
+                    $q_where .= $q_where_sub;
+                    $q_where .= ')';
+
+                } elseif ($operator == 'LIKE') {
+                    $val = '%'.$val.'%';
+                    $q_where = ' AND '.Sql::tick($column).' LIKE '.Sql::quote($val).'';
+
+                } elseif ($operator == 'NULL') {
+                    $q_where = ' AND '.Sql::tick($column).' IS NULL';
+
+                } elseif ($operator == 'NOTNULL') {
+                    $q_where = ' AND '.Sql::tick($column).' IS NOT NULL';
+
+                } elseif ($type == Model::DATETIME) {
+                    $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.Sql::quote($val).'';
+
+                } elseif ($type == Model::INTEGER) {
+                    $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.intval($val).'';
+
+                } elseif ($type == Model::FLOAT) {
+                    $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.floatval($val).'';
+
+                } elseif ($type == Model::STRING) {
+                    $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.Sql::quote($val).'';
                 }
 
-                $q_where_sub = substr($q_where_sub, 0, -4);
-                $q_where .= $q_where_sub;
-                $q_where .= ')';
-
-            } elseif ($operator == 'LIKE') {
-                $val = '%'.$val.'%';
-                $q_where = ' AND '.Sql::tick($column).' LIKE '.Sql::quote($val).'';
-
-            } elseif ($operator == 'NULL') {
-                $q_where = ' AND '.Sql::tick($column).' IS NULL';
-
-            } elseif ($operator == 'NOTNULL') {
-                $q_where = ' AND '.Sql::tick($column).' IS NOT NULL';
-
-            } elseif ($type == Model::INTEGER) {
-                $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.intval($val).'';
-
-            } elseif ($type == Model::FLOAT) {
-                $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.floatval($val).'';
-
-            } elseif ($type == Model::STRING) {
-                $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.Sql::quote($val).'';
+                $q = str_replace($tag, $q_where.$tag, $q);
             }
-
-            $q = str_replace($tag, $q_where.$tag, $q);
-            $this->sql = $q;
         }
+
+        $this->sql = $q;
     }
 
     /**
