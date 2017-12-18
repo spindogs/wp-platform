@@ -515,8 +515,8 @@ class Collection {
                 } elseif ($operator == 'NOTNULL') {
                     $q_where = ' AND '.Sql::tick($column).' IS NOT NULL';
 
-                } elseif ($type == Model::DATETIME) {
-                    $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.Sql::quote($val).'';
+                } elseif ($type == Model::DATE) {
+                    $q_where = ' AND DATE('.Sql::tick($column).') '.$operator.' '.Sql::quote($val).'';
 
                 } elseif ($type == Model::INTEGER) {
                     $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.intval($val).'';
@@ -524,7 +524,7 @@ class Collection {
                 } elseif ($type == Model::FLOAT) {
                     $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.floatval($val).'';
 
-                } elseif ($type == Model::STRING) {
+                } else {
                     $q_where = ' AND '.Sql::tick($column).' '.$operator.' '.Sql::quote($val).'';
                 }
 

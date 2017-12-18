@@ -14,6 +14,7 @@ class Model {
     const STRING = 000002;
     const FLOAT = 000003;
     const DATETIME = 000004;
+    const DATE = 000005;
 
     //protected static $table;
     //protected static $cache_by_key;
@@ -144,6 +145,7 @@ class Model {
 
             switch ($type) {
                 case self::DATETIME:
+                case self::DATE:
                     $this->{$key} = Date::datetime($this->{$key});
                 break;
             }
@@ -261,6 +263,7 @@ class Model {
 
             switch ($type) {
                 case self::DATETIME:
+                case self::DATE:
                     $values[$key] = Date::mysqltime($values[$key]);
                 break;
             }
