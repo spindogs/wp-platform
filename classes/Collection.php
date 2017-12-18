@@ -12,6 +12,8 @@ class Collection {
     protected $tags = [];
     protected $index_by;
     protected $cache_by;
+    protected $distinct;
+    protected $count = [];
     protected $select = [];
     protected $joins = [];
     protected $where = [];
@@ -28,6 +30,25 @@ class Collection {
     {
         $this->model_name = $model_name;
         $this->model = new $model_name();
+    }
+
+    /**
+     * @return void
+     */
+    public function distinct()
+    {
+        $this->distinct = true;
+    }
+
+    /**
+     * @param array|string $fields
+     * @return void
+     */
+    public function count($fields)
+    {
+        $fields = (array)$fields;
+        $fields = array_flip($fields);
+        $this->count = array_merge($this->count, $fields);
     }
 
     /**
@@ -168,35 +189,10 @@ class Collection {
      */
     protected function loadRows()
     {
-        global $Database;
-        global $wpdb;
-
-        $q = $this->getSql();
         $model_name = $this->model_name;
         $cache_key = $this->getCacheKey();
-
-        if (isset($Database)) {
-            $raw = $Database->getResults($q, 'OBJECT_NUM');
-        } else {
-            $raw = $wpdb->get_results($q);
-        }
-
-        $rtn = array();
-
-        if (!$raw) {
-            $this->found_rows = 0;
-            return array();
-        }
-
-        if (strpos($q, 'SQL_CALC_FOUND_ROWS') !== false) {
-            if (isset($Database)) {
-                $this->found_rows = $Database->getVal('SELECT FOUND_ROWS()');
-                $this->found_rows = intval($this->found_rows);
-            } else {
-                $this->found_rows = $wpdb->get_var('SELECT FOUND_ROWS()');
-                $this->found_rows = intval($this->found_rows);
-            }
-        }
+        $raw = $this->getRaw();
+        $rtn = [];
 
         foreach ($raw as $row) {
 
@@ -224,6 +220,53 @@ class Collection {
         }
 
         $this->rows = $rtn;
+    }
+
+    /**
+     * @return void
+     */
+    public function getRaw()
+    {
+        global $Database;
+        global $wpdb;
+
+        $q = $this->getSql();
+
+        if (isset($Database)) {
+            $raw = $Database->getResults($q, 'OBJECT_NUM');
+        } else {
+            $raw = $wpdb->get_results($q);
+        }
+
+        if (!$raw) {
+            $this->found_rows = 0;
+            return array();
+        }
+
+        if (strpos($q, 'SQL_CALC_FOUND_ROWS') !== false) {
+            if (isset($Database)) {
+                $this->found_rows = $Database->getVal('SELECT FOUND_ROWS()');
+                $this->found_rows = intval($this->found_rows);
+            } else {
+                $this->found_rows = $wpdb->get_var('SELECT FOUND_ROWS()');
+                $this->found_rows = intval($this->found_rows);
+            }
+        }
+
+        return $raw;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVal()
+    {
+        $raw = $this->getRaw();
+
+        if ($raw) {
+            $first_row = reset($raw);
+            return reset($first_row);
+        }
     }
 
     /**
@@ -258,6 +301,7 @@ class Collection {
         $this->processGroupby();
         $this->processOrderby();
         $this->processLimit();
+        $this->processDistinct();
 
         $this->cleanup();
 
@@ -359,12 +403,35 @@ class Collection {
     }
 
     /**
-     * @todo
      * @return void
      */
     protected function processSelect()
     {
+        if (!$this->count && !$this->select) {
+            return;
+        }
 
+        $q = $this->sql;
+        $q_select = '';
+
+        $fields = $this->model->getSchema('fields');
+
+        foreach ($this->count as $key => $x) {
+            $column = $fields[$key]['column'];
+            $count_name = 'count_'.$key;
+            $q_select .= 'COUNT('.Sql::tick($column).') AS '.$count_name.',';
+        }
+
+        foreach ($this->select as $key => $x) {
+            $column = $fields[$key]['column'];
+            $q_select .= Sql::tick($column).',';
+        }
+
+        $q_select = rtrim($q_select, ',');
+        $pattern = '/SELECT(.*)FROM/s';
+        $replacement = 'SELECT '.$q_select.' FROM';
+        $q = preg_replace($pattern, $replacement, $q);
+        $this->sql = $q;
     }
 
     /**
@@ -377,7 +444,6 @@ class Collection {
     }
 
     /**
-     * @todo
      * @return void
      */
     protected function processWhere()
@@ -485,6 +551,22 @@ class Collection {
         $q_limit .= (isset($this->offset) ? ' OFFSET '.intval($this->offset).'' : '');
 
         $q = str_replace('{limit}', $q_limit, $q);
+        $this->sql = $q;
+    }
+
+    /**
+     * @return void
+     */
+    protected function processDistinct()
+    {
+        if (!$this->distinct) {
+            return;
+        }
+
+        $q = $this->sql;
+        $pattern = '/SELECT/';
+        $replacement = 'SELECT DISTINCT';
+        $q = preg_replace($pattern, $replacement, $q);
         $this->sql = $q;
     }
 
