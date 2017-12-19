@@ -277,7 +277,7 @@ There are a number of helpful methods you can use on a collection:
 * Get the raw results of a collection (not strongly typed to an object)  
 `$collection->getRaw()`
 
-* Get a single value from a query result (useful for aggregates)
+* Get a single value from a query result (useful for aggregates)  
 `$collection->getVal()`
 
 ## Translations
