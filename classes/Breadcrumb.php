@@ -11,10 +11,13 @@ class Breadcrumb {
      */
     public function generate()
     {
-
         global $wp_query;
         global $post;
         //print_r($wp_query);exit;
+
+        if (is_feed()) {
+            return;
+        }
 
         //reset
         $this->nodes = array();
