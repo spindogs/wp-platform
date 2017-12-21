@@ -113,7 +113,7 @@ class Setup {
         add_action('after_setup_theme', array(__CLASS__, 'sessionStart'));
 
         //router
-        add_action('after_setup_theme', array(__CLASS__, 'router'));
+        add_action('init', array(__CLASS__, 'router'), 9999);
         add_action('admin_menu', array(__CLASS__, 'router'));
 
         //error handler
