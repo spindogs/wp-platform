@@ -1592,6 +1592,17 @@ class Form {
         $this->error($msg, $key, $ignore);
     }
 
+
+    /**
+     * @param string $field
+     */
+    public function clearError($field)
+    {
+        if (isset($this->errors[$field])) {
+            unset($this->errors[$field]);
+        }
+    }
+
     /**
      * @param string $label
      * @param array $attrs
@@ -2073,9 +2084,13 @@ class Form {
      */
     protected static function addToFooter($html)
     {
-        add_action('wp_footer', function() use ($html){
-            echo $html;
-        }, 100);
+        if (function_exists('wp_footer')) {
+            add_action('wp_footer', function() use ($html){
+                echo $html;
+            }, 100);
+        } else {
+            $GLOBALS['footer_includes'][] = $html;
+        }
     }
 
     /**
