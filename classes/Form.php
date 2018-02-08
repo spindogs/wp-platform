@@ -1601,6 +1601,9 @@ class Form {
         if (isset($this->errors[$field])) {
             unset($this->errors[$field]);
         }
+        if (!$this->errors) {
+            $this->has_success = true;
+        }
     }
 
     /**
