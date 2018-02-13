@@ -201,10 +201,10 @@ class Form {
 
         if (!$this->submitted()) {
             $value = $initial;
-        } else if (isset($_REQUEST[$name])) {
+        } else if (isset($_REQUEST[$name]) && $_REQUEST[$name] !== '') {
             $value = $_REQUEST[$name];
         } else {
-            $value = '';
+            $value = null;
         }
 
         $this->addField($name, $params);
@@ -400,7 +400,9 @@ class Form {
 
                 if ($is_multi && in_array($key, $value)) {
                     $selected = ' selected="selected"';
-                } elseif ($key == $value) {
+                } elseif ($value !== null && $key == $value) {
+                    $selected = ' selected="selected"';
+                } elseif ($value === null && $key === $value) {
                     $selected = ' selected="selected"';
                 } else {
                     $selected = '';
