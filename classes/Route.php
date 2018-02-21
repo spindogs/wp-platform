@@ -62,9 +62,16 @@ class Route {
             return; //no routes to match
         }
 
+        $network_url = network_site_url();
+        $blog_id = get_current_blog_id();
+        $blog_url = get_site_url($blog_id);
+
         $uri = $path_to_page;
         $uri = trim($uri, '/');
         $uri = strtolower($uri);
+        $uri = $network_url.$uri; //add in network url
+        $uri = str_replace($blog_url, '', $uri); //remove blog url
+        $uri = trim($uri, '/');
         $rules = static::$rules;
 
         //see if the url matches any rules
