@@ -299,6 +299,10 @@ Finally, ensure you wrap all the static strings in your templates with the `Tran
     use Platform\Translation as T;
     echo '<h1>'.T::_('Hello world').'</h1>';
 
+If you want new translations to automatically be created in the database, add the following line to `functions.php`:
+
+    Platform\Setup::debug();
+
 ## Admin
 
 From time to time you may want to add custom interfaces to the wordpress back office. You can do this by setting up routes in `App\Routes.php` using the `Routes::admin()` method:
