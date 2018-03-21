@@ -98,7 +98,7 @@ class Setup {
         add_action('after_setup_theme', array(__CLASS__, 'sessionStart'));
 
         //router
-        add_action('after_setup_theme', array(__CLASS__, 'router'));
+        add_action('wp_loaded', array(__CLASS__, 'router'));
 
         //error handler
         error_reporting(E_ALL | E_STRICT);

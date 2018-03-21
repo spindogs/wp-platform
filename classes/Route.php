@@ -126,6 +126,8 @@ class Route {
             $uri_split = explode('/', $uri);
             $parent_file = reset($uri_split);
             $GLOBALS['parent_file'] = $parent_file;
+            $GLOBALS['_wp_submenu_nopriv'] = [];
+            $wp_db_version = get_option('db_version');
             $_POST['stop_wp_upgrade_message'] = true;
             require(ABSPATH.'/wp-admin/admin.php');
         }
