@@ -1730,9 +1730,6 @@ class Form {
         //open form
         $this->open();
 
-        //put hidden
-        $this->putHidden();
-
         //add html
         if (isset($this->html['__start__']['before'])) {
             foreach ($this->html['__start__']['before'] as $html_bit) {
