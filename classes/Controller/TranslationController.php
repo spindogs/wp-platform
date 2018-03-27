@@ -15,6 +15,11 @@ class TranslationController extends Controller {
     {
         //edit form
         if (isset($_POST['translations'])) {
+
+            if (function_exists('stripslashes_deep')) {
+                $_POST['translations'] = stripslashes_deep($_POST['translations']);
+            }
+
             foreach ($_POST['translations'] as $id => $values) {
                 $translation = new Translation($id);
                 $translation->map($values);
