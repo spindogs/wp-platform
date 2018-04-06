@@ -74,6 +74,9 @@ class Route {
         $uri = trim($uri, '/');
         $rules = static::$rules;
 
+        // print_r($uri);exit;
+        // print_r($rules);exit;
+
         //see if the url matches any rules
         $matches = array();
 
@@ -84,7 +87,7 @@ class Route {
             $rule = trim($rule, '^');
             $rule = trim($rule, '$');
             $rule = str_replace('/', '\/', $rule);
-            $rule = '/^'.$rule.'$/';
+            $rule = '/^'.$rule.'$/i';
 
             if (preg_match($rule, $uri, $matches)) {
                 break;
