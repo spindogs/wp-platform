@@ -359,7 +359,7 @@ class Form {
         $input .= "\n";
 
         if (!isset($attrs['first_option'])) {
-            $input .= '<option value="">Please select '.$label.'</option>';
+            $input .= '<option value="">Please select</option>';
             $input .= "\n";
         } elseif ($attrs['first_option']) {
             $input .= '<option value="">'.$attrs['first_option'].'</option>';
