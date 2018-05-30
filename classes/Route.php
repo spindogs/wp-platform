@@ -69,7 +69,7 @@ class Route {
         $uri = $path_to_page;
         $uri = trim($uri, '/');
         $uri = strtolower($uri);
-        $uri = $network_url.$uri; //add in network url
+        $uri = $blog_url.$uri; //add in network url
         $uri = str_replace($blog_url, '', $uri); //remove blog url
         $uri = trim($uri, '/');
         $rules = static::$rules;
