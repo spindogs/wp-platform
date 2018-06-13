@@ -1569,17 +1569,17 @@ class Form {
      * @param bool $ignore
      * @return void
      */
-    public function error($msg, $key=false, $ignore=false)
+    public function error($msg, $key = null, $ignore = false)
     {
-
         $this->has_success = false;
 
-        if ($key && !isset($this->errors[$key])) {
-            $this->errors[$key] = $msg;
-        } elseif (!$ignore) {
+        if ($key) {
+            if (!isset($this->errors[$key]) || !$ignore) {
+                $this->errors[$key] = $msg;
+            }
+        } else {
             $this->errors[] = $msg;
         }
-
     }
 
     /**
