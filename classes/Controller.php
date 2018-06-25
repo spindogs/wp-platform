@@ -74,9 +74,10 @@ class Controller {
         }
 
         $controller = new $controller_name();
+        $controller->mergeData($this->data);
         $controller->call($action, $params);
 
-        $this->data = array_merge($this->data, $controller->data);
+        $this->mergeData($controller->data);
 
     }
 
@@ -184,6 +185,15 @@ class Controller {
     protected function setData($key, $value)
     {
         $this->data[$key] = $value;
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    protected function mergeData($data)
+    {
+        $this->data = array_merge($this->data, $data);
     }
 
 }
