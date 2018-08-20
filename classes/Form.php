@@ -4,9 +4,10 @@ namespace Platform;
 use Platform\Setup;
 use Platform\Filter;
 use Platform\Html;
+use Platform\Translation;
 
-class Form {
-
+class Form
+{
     protected $uniquevar;
     protected $is_submitted;
     protected $has_success;
@@ -162,9 +163,9 @@ class Form {
         if ($this->submitted()) {
 
             if ($required && $value == '') {
-                $this->error($label.' not provided', $name);
+                $this->error(self::__('%s not provided', $label), $name);
             } elseif ($type == 'text' && isset($attrs['limit']) && strlen($value) > $attrs['limit']) {
-                $this->error('Cannot enter more than '.$attrs['limit'].' characters', $name);
+                $this->error(self::__('Cannot enter more than %d characters', (integer)$attrs['limit']), $name);
             }
 
         }
@@ -215,7 +216,7 @@ class Form {
         if ($this->submitted()) {
 
             if ($required && $value == '') {
-                $this->error($label.' not provided', $name);
+                $this->error(self::__('%s not provided', $label), $name);
             }
 
         }
@@ -248,7 +249,7 @@ class Form {
         if ($this->submitted()) {
 
             if ($required && count($this->values[$name]) < 1) {
-                $this->error($label.' not provided', $name);
+                $this->error(self::__('%s not provided', $label), $name);
             }
 
         }
@@ -619,7 +620,7 @@ class Form {
         if ($this->submitted()) {
 
             if ($required && !$is_valid_date) {
-                $this->error($label.' is not a valid date', $name);
+                $this->error(self::__('%s is not a valid date', $label), $name);
             }
 
             if (empty($attrs['greater_than'])) {
@@ -627,28 +628,32 @@ class Form {
             } elseif ($value < $this->values[$attrs['greater_than']]) {
                 $target = $attrs['greater_than'];
                 $target_label = $this->fields[$target]['label'];
-                $this->error('Date must be after '.$target_label, $name);
+                $this->error(self::__('Date must be after %s', $target_label), $name);
             }
 
         }
 
-        $fields = array('d' => 'day', 'm' => 'month', 'Y' => 'year');
         $input = '';
+        $fields = array(
+            'd' => 'day',
+            'm' => 'month',
+            'Y' => 'year'
+        );
         $day = array();
         $year = array();
         $month = array(
-            1 => 'January',
-            2 => 'February',
-            3 => 'March',
-            4 => 'April',
-            5 => 'May',
-            6 => 'June',
-            7 => 'July',
-            8 => 'August',
-            9 => 'September',
-            10 => 'October',
-            11 => 'November',
-            12 => 'December'
+            1 => self::__('January'),
+            2 => self::__('February'),
+            3 => self::__('March'),
+            4 => self::__('April'),
+            5 => self::__('May'),
+            6 => self::__('June'),
+            7 => self::__('July'),
+            8 => self::__('August'),
+            9 => self::__('September'),
+            10 => self::__('October'),
+            11 => self::__('November'),
+            12 => self::__('December'),
         );
 
         if (isset($attrs['year_start'])) {
@@ -754,7 +759,7 @@ class Form {
         if ($this->submitted()) {
 
             if ($required && !$value) {
-                $this->error($label.' not provided', $name);
+                $this->error(self::__('%s not provided', $label), $name);
             }
 
             if (empty($attrs['min'])) {
@@ -762,7 +767,7 @@ class Form {
             } elseif (!$value) {
                 //do nothing if value not set
             } elseif ($value < $attrs['min']) {
-                $this->error($label.' not valid', $name);
+                $this->error(self::__('%s not valid', $label), $name);
             }
 
             if (empty($attrs['max'])) {
@@ -770,9 +775,9 @@ class Form {
             } elseif (!$value) {
                 //do nothing if value not set
             } elseif ($attrs['max'] == 'today' && $value > time()) {
-                $this->error($label.' not valid', $name);
+                $this->error(self::__('%s not valid', $label), $name);
             } elseif ($attrs['max'] != 'today' && $value > $attrs['max']) {
-                $this->error($label.' not valid', $name);
+                $this->error(self::__('%s not valid', $label), $name);
             }
 
         }
@@ -899,7 +904,7 @@ class Form {
         if ($this->submitted()) {
 
             if ($required && !$value) {
-                $this->error($label.' not provided', $name);
+                $this->error(self::__('%s not provided', $label), $name);
             }
 
         }
@@ -982,8 +987,11 @@ class Form {
      * @param bool $initial
      * @return void
     */
-    public function confirm($name, $label, $error_msg='You must tick the confirm box', $initial=0)
+    public function confirm($name, $label, $error_msg = null, $initial = 0)
     {
+        if (!$error_msg) {
+            $error_msg = self::__('You must tick the confirm box');
+        }
 
         $options = array(
             1 => $label
@@ -1147,7 +1155,7 @@ class Form {
         if ($this->submitted()) {
 
             if (!self::validateEmail($value)) {
-                $this->error($field['label'].' is not a valid email address', $name, 'IGNORE');
+                $this->error(self::__('%s is not a valid email address', $field['label']), $name, 'IGNORE');
             }
 
         }
@@ -1177,7 +1185,7 @@ class Form {
         if ($this->submitted()) {
 
             if ($value_1 != $value_2) {
-                $this->error('The emails you entered do not match. Please try again', $name_2);
+                $this->error(self::__('The emails you entered do not match - please try again'), $name_2);
             }
 
         }
@@ -1215,7 +1223,7 @@ class Form {
         if ($this->submitted()) {
 
             if ($required && !$value) {
-                $this->error($label.' not provided', $name);
+                $this->error(self::__('%s not provided', $label), $name);
             }
 
         }
@@ -1242,19 +1250,19 @@ class Form {
         if ($this->submitted()) {
 
             if ($required && !intval($value)) {
-                $this->error($label.' cannot be zero', $name);
+                $this->error(self::__('%s cannot be zero', $label), $name);
             }
 
             if ($value && !is_numeric($value)) {
-                $this->error($label.' must be numeric', $name);
+                $this->error(self::__('%s must be numeric', $label), $name);
             }
 
             if (isset($attrs['min']) && $value < $attrs['min']) {
-                $this->error(sprintf('%s is below the minimum value', $label), $name);
+                $this->error(self::__('%s is below the minimum value', $label), $name);
             }
 
             if (isset($attrs['max']) && $value > $attrs['max']) {
-                $this->error(sprintf('%s is above the maximum value', $label), $name);
+                $this->error(self::__('%s is above the maximum value', $label), $name);
             }
 
         }
@@ -1281,7 +1289,7 @@ class Form {
         if ($this->submitted()) {
 
             if (strlen($value) > 0 && preg_match('/[A-Za-z]+/', $value)) {
-                $msg = sprintf('%s is not a valid phone number', $value);
+                $msg = self::__('%s is not a valid phone number', $value);
                 $this->error($msg, $name, 'IGNORE');
             }
 
@@ -1370,7 +1378,7 @@ class Form {
                     //do nothing if extension is valid
                 } else {
                     $source = false;
-                    $this->error(sprintf('Your file must be in one of the following formats: %s', $allowed_exts_formatted), $name);
+                    $this->error(self::__('Your file must be in one of the following formats: %s', $allowed_exts_formatted), $name);
                 }
 
             }
@@ -1427,7 +1435,7 @@ class Form {
         //check required
         if ($this->submitted()) {
             if ($this->isRequired($name) && !$value && !$initial) {
-                $msg = 'You must select a file to upload';
+                $msg = self::__('You must select a file to upload');
                 $this->error($msg, $name);
             }
         }
@@ -2141,4 +2149,13 @@ class Form {
         }
     }
 
+    /**
+     * @param string $uid
+     * @param mixed[] $params
+     * @return string
+     */
+    protected function __($uid, ...$params)
+    {
+        return Translation::get($uid, ...$params);
+    }
 }
