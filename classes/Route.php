@@ -4,8 +4,8 @@ namespace Platform;
 use Platform\Request;
 use Platform\Filter;
 
-class Route {
-
+class Route
+{
     protected static $rules = [];
     protected static $admin_rules = [];
     protected static $current_route;
@@ -63,17 +63,28 @@ class Route {
         }
 
         $network_url = network_site_url();
+        $network_url_length = strlen($network_url);
         $blog_id = get_current_blog_id();
         $blog_url = get_site_url($blog_id);
+        $blog_url_portion = substr($blog_url, 0, $network_url_length);
 
         $uri = $path_to_page;
         $uri = trim($uri, '/');
         $uri = strtolower($uri);
-        $uri = $network_url.$uri; //add in network url
-        $uri = str_replace($blog_url, '', $uri); //remove blog url
+
+        if ($blog_url_portion == $network_url) {
+            //multisite blogs use suffixes
+            $uri = $network_url.$uri; //add in network url
+            $uri = str_replace($blog_url, '', $uri); //remove blog url
+        } else {
+            //multisite blogs use TLDN
+        }
+
         $uri = trim($uri, '/');
         $rules = static::$rules;
 
+        // print_r($network_url);exit;
+        // print_r($blog_url);exit;
         // print_r($uri);exit;
         // print_r($rules);exit;
 
