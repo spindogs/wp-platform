@@ -42,8 +42,17 @@ class Route
      */
     public static function admin($regex)
     {
+        $siteurl = site_url();
+        $siteurl = str_replace('://', '', $siteurl);
+        $siteurl_split = explode('/', $siteurl);
+        array_shift($siteurl_split);
+        $site_prefix = implode('/', $siteurl_split);
+
+        $admin_prefix = $site_prefix.'/wp-admin';
+        $admin_prefix = ltrim($admin_prefix, '/');
+
         $regex = ltrim($regex, '/');
-        $regex = 'wp-admin/'.$regex;
+        $regex = $admin_prefix.'/'.$regex;
         $route = new self();
         $route->regex = $regex;
         $route->is_admin = true;
