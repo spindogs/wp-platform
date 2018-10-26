@@ -147,12 +147,16 @@ class Sql {
         global $Database;
         global $wpdb;
 
-         if (!$where) {
-             return false;
-         }
+        if (!$where) {
+            return false;
+        }
 
         if ($auto_condense) {
             $values = self::condense($values, $table);
+        }
+
+        if (!$values) {
+            return;
         }
 
          if (!is_array($where)) {
