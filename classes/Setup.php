@@ -89,14 +89,18 @@ class Setup
         self::$salt = NONCE_SALT;
 
         //default debug
-        if ($email = env('DEBUG_EMAIL')) {
-            self::debug($email);
+        if (function_exists('env')) {
+            if ($email = env('DEBUG_EMAIL')) {
+                self::debug($email);
+            }
         }
 
         //default email from
-        if ($email = env('MAIL_FROM')) {
-            $name = env('MAIL_NAME');
-            self::emailFrom($email, $name);
+        if (function_exists('env')) {
+            if ($email = env('MAIL_FROM')) {
+                $name = env('MAIL_NAME');
+                self::emailFrom($email, $name);
+            }
         }
 
         //setup request
