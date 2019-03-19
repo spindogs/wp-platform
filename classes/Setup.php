@@ -199,13 +199,15 @@ class Setup {
         $view = Route::dispatch(); //deprecated route mechanism
     }
 
-    /**
+     /**
      * @return void
      */
     public static function sessionStart()
     {
-        if (!session_id()) {
-            session_start();
+        if (!headers_sent()) {
+            if (!session_id()) {
+                session_start();
+            }
         }
     }
 
