@@ -3,7 +3,6 @@
  * Class that creates a one to many style taxonomy within Wordpress. Useful for when you need to force the user to
  * select one term per post
  *
- * Created by PhpStorm.
  * User: dgriffin
  * Date: 05/10/2018
  * Time: 16:15
@@ -24,15 +23,15 @@ class OneToManyTaxonomy
     public function __construct()
     {
         if($this->disable_parents){
-            $this->args += ['meta_box_cb' => [$this, 'meta_box_no_parents']];
+            $this->args += ['meta_box_cb' => [$this, 'metaBoxNoParents']];
         } else {
-            $this->args += ['meta_box_cb' => [$this, 'meta_box']];
+            $this->args += ['meta_box_cb' => [$this, 'metaBox']];
         }
         register_taxonomy($this->taxonomy, $this->post_types, $this->args);
         foreach ($this->post_types as $type){
-            add_action('save_post_'.$type, [$this, 'save_taxonomy_meta_box']);
+            add_action('save_post_'.$type, [$this, 'saveTaxonomyMetaBox']);
         }
-        add_action('edit_form_top', [$this, 'show_required_field_error_msg']);
+        add_action('edit_form_top', [$this, 'showRequiredFieldErrorMsg']);
     }
 
     /**
@@ -40,7 +39,7 @@ class OneToManyTaxonomy
      *
      * @param $post
      */
-    public function meta_box($post)
+    public function metaBox($post)
     {
         $terms = get_terms($this->taxonomy, array('hide_empty' => false));
         $post  = get_post();
@@ -64,7 +63,7 @@ class OneToManyTaxonomy
     /**
      * Handles the no parents option
      */
-    public function meta_box_no_parents()
+    public function metaBoxNoParents()
     {
         $parent_terms = get_terms( $this->taxonomy, array( 'hide_empty' => false, 'parent' => 0) );
         foreach ($parent_terms as $key => $term){
@@ -108,7 +107,7 @@ class OneToManyTaxonomy
      *
      * @param $post_id
      */
-    public function save_taxonomy_meta_box( $post_id )
+    public function saveTaxonomyMetaBox( $post_id )
     {
         if (defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE) {
             return;
@@ -141,7 +140,7 @@ class OneToManyTaxonomy
      *
      * @param $post
      */
-    public function show_required_field_error_msg($post)
+    public function showRequiredFieldErrorMsg($post)
     {
         if (in_array(get_post_type($post), $this->post_types) && 'auto-draft' !== get_post_status($post) ) {
             $chosen_term = wp_get_object_terms($post->ID, $this->taxonomy, array( 'orderby' => 'term_id', 'order' => 'ASC' ));
