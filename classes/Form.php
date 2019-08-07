@@ -65,11 +65,6 @@ class Form
             $this->is_submitted = true;
             $this->has_success = true; //this gets set false if we hit an error
         }
-
-        if (function_exists('csrf_token')) {
-            $csrf_token = csrf_token();
-            $this->hidden('_token', $csrf_token);
-        }
     }
 
     /**
