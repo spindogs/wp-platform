@@ -89,14 +89,14 @@ class Setup
         self::$salt = NONCE_SALT;
 
         //default debug
-        if (function_exists('env')) {
+        if (function_exists('env') && class_exists('Dotenv\\Environment\\DotenvFactory')) {
             if ($email = env('DEBUG_EMAIL')) {
                 self::debug($email);
             }
         }
 
         //default email from
-        if (function_exists('env')) {
+        if (function_exists('env') && class_exists('Dotenv\\Environment\\DotenvFactory')) {
             if ($email = env('MAIL_FROM')) {
                 $name = env('MAIL_NAME');
                 self::emailFrom($email, $name);
