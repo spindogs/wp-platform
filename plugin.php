@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WP-Platform V1
- * Version: 1.7.37
+ * Version: 1.7.39
  * Description: Platform to allow developers to build bespoke functionality in an MVC and OOP fashion
  */
 
