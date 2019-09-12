@@ -17,8 +17,8 @@ class Route
     protected $is_admin;
 
     /**
-    * @return void
-    */
+     * @return void
+     */
     public function call($controller, $action)
     {
         $this->controller = $controller;
@@ -42,14 +42,7 @@ class Route
      */
     public static function admin($regex)
     {
-        $siteurl = site_url();
-        $siteurl = str_replace('://', '', $siteurl);
-        $siteurl_split = explode('/', $siteurl);
-        array_shift($siteurl_split);
-        $site_prefix = implode('/', $siteurl_split);
-
-        $admin_prefix = $site_prefix.'/wp-admin';
-        $admin_prefix = ltrim($admin_prefix, '/');
+        $admin_prefix = 'wp-admin';
 
         $regex = ltrim($regex, '/');
         $regex = $admin_prefix.'/'.$regex;
