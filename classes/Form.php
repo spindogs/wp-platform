@@ -1670,7 +1670,7 @@ class Form
         $action .= ($this->fragment ? '#'.$this->fragment : '');
 
         //start form
-        echo '<form action="'.$action.'" ';
+        echo '<form action="'.esc_url($action).'" ';
         echo 'method="'.$this->method.'" ';
         echo 'class="'.$this->form_class.'" ';
         echo 'enctype="multipart/form-data">';

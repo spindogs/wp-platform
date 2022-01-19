@@ -79,7 +79,7 @@ class Paging {
      * @param string $text_str
      * @return void
      */
-    public function display($num_show = 99, $text_str = false)
+    public function display($num_show = 8, $text_str = false)
     {
 
         $last_page = ceil($this->total / $this->per_page);
