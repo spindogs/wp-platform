@@ -1158,6 +1158,23 @@ class Form
     }
 
     /**
+     * Add a CSRF nonce and validates it in the response
+     */
+    public function csrf()
+    {
+        $nonce = wp_create_nonce($this->form_id);
+        $this->hidden('_nonce', $nonce);
+
+        if ($this->submitted()) {
+            $success = wp_verify_nonce($this->getValue('_nonce'), $this->form_id)
+            if (!$success) {
+                $this->error('Your session has timed out on your form. Please try again.');
+            }
+        }
+    }
+
+
+    /**
      * @param string $name
      * @param string $label
      * @param string $label_2
